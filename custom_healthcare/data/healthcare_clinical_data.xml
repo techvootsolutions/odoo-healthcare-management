@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="lab_test_hba1c" model="healthcare.lab.test.type">
+        <field name="name">HbA1c</field>
+        <field name="code">HBA1C</field>
+        <field name="category">blood</field>
+        <field name="default_unit">%</field>
+        <field name="reference_range">4.0 - 5.6</field>
+    </record>
+    <record id="lab_test_lipid" model="healthcare.lab.test.type">
+        <field name="name">Lipid Profile (LDL)</field>
+        <field name="code">LDL</field>
+        <field name="category">blood</field>
+        <field name="default_unit">mg/dL</field>
+        <field name="reference_range">&lt; 100</field>
+    </record>
+    <record id="lab_test_creatinine" model="healthcare.lab.test.type">
+        <field name="name">Creatinine</field>
+        <field name="code">CREAT</field>
+        <field name="category">blood</field>
+        <field name="default_unit">mg/dL</field>
+        <field name="reference_range">0.6 - 1.2</field>
+    </record>
+    <record id="lab_test_acr" model="healthcare.lab.test.type">
+        <field name="name">Urine ACR</field>
+        <field name="code">ACR</field>
+        <field name="category">urine</field>
+        <field name="default_unit">mg/g</field>
+        <field name="reference_range">&lt; 30</field>
+    </record>
+    <record id="lab_test_fbc" model="healthcare.lab.test.type">
+        <field name="name">Full Blood Count</field>
+        <field name="code">FBC</field>
+        <field name="category">blood</field>
+        <field name="default_unit"/>
+        <field name="reference_range">See report</field>
+    </record>
+
+    <record id="medicine_metformin" model="healthcare.medicine">
+        <field name="name">Metformin</field>
+        <field name="active_ingredient">Metformin</field>
+        <field name="strength">500mg</field>
+        <field name="form">tablet</field>
+    </record>
+    <record id="medicine_amlodipine" model="healthcare.medicine">
+        <field name="name">Amlodipine</field>
+        <field name="active_ingredient">Amlodipine</field>
+        <field name="strength">5mg</field>
+        <field name="form">tablet</field>
+    </record>
+    <record id="medicine_atorvastatin" model="healthcare.medicine">
+        <field name="name">Atorvastatin</field>
+        <field name="active_ingredient">Atorvastatin</field>
+        <field name="strength">20mg</field>
+        <field name="form">tablet</field>
+    </record>
+    <record id="medicine_amoxicillin" model="healthcare.medicine">
+        <field name="name">Amoxicillin</field>
+        <field name="active_ingredient">Amoxicillin</field>
+        <field name="strength">500mg</field>
+        <field name="form">capsule</field>
+        <field name="allergy_keywords">penicillin,amoxicillin,beta-lactam</field>
+    </record>
+    <record id="medicine_salbutamol" model="healthcare.medicine">
+        <field name="name">Salbutamol Inhaler</field>
+        <field name="active_ingredient">Salbutamol</field>
+        <field name="strength">100mcg</field>
+        <field name="form">inhaler</field>
+    </record>
+</odoo>

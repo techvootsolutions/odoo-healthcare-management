@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Wards -->
+    <record id="ward_northside_general" model="healthcare.ward">
+        <field name="name">General Ward</field>
+        <field name="code">NFP-GW</field>
+        <field name="practice_id" ref="custom_healthcare.practice_northside"/>
+        <field name="ward_type">general</field>
+        <field name="floor">1</field>
+    </record>
+    <record id="ward_northside_icu" model="healthcare.ward">
+        <field name="name">ICU</field>
+        <field name="code">NFP-ICU</field>
+        <field name="practice_id" ref="custom_healthcare.practice_northside"/>
+        <field name="ward_type">icu</field>
+        <field name="floor">2</field>
+    </record>
+    <record id="ward_riverside_general" model="healthcare.ward">
+        <field name="name">General Ward</field>
+        <field name="code">RPC-GW</field>
+        <field name="practice_id" ref="custom_healthcare.practice_riverside"/>
+        <field name="ward_type">general</field>
+        <field name="floor">1</field>
+    </record>
+
+    <!-- Rooms -->
+    <record id="room_northside_101" model="healthcare.room">
+        <field name="name">101</field>
+        <field name="ward_id" ref="ward_northside_general"/>
+        <field name="room_type">general</field>
+    </record>
+    <record id="room_northside_102" model="healthcare.room">
+        <field name="name">102</field>
+        <field name="ward_id" ref="ward_northside_general"/>
+        <field name="room_type">private</field>
+    </record>
+    <record id="room_northside_icu1" model="healthcare.room">
+        <field name="name">ICU-1</field>
+        <field name="ward_id" ref="ward_northside_icu"/>
+        <field name="room_type">icu</field>
+    </record>
+    <record id="room_riverside_201" model="healthcare.room">
+        <field name="name">201</field>
+        <field name="ward_id" ref="ward_riverside_general"/>
+        <field name="room_type">general</field>
+    </record>
+    <record id="room_riverside_202" model="healthcare.room">
+        <field name="name">202</field>
+        <field name="ward_id" ref="ward_riverside_general"/>
+        <field name="room_type">semi_private</field>
+    </record>
+
+    <!-- Beds -->
+    <record id="bed_northside_101_a" model="healthcare.bed">
+        <field name="name">101-A</field>
+        <field name="room_id" ref="room_northside_101"/>
+        <field name="bed_type">general</field>
+        <field name="daily_rate">120.0</field>
+        <field name="status">available</field>
+    </record>
+    <record id="bed_northside_101_b" model="healthcare.bed">
+        <field name="name">101-B</field>
+        <field name="room_id" ref="room_northside_101"/>
+        <field name="bed_type">general</field>
+        <field name="daily_rate">120.0</field>
+        <field name="status">available</field>
+    </record>
+    <record id="bed_northside_102_a" model="healthcare.bed">
+        <field name="name">102-A</field>
+        <field name="room_id" ref="room_northside_102"/>
+        <field name="bed_type">general</field>
+        <field name="daily_rate">220.0</field>
+        <field name="status">cleaning</field>
+    </record>
+    <record id="bed_northside_icu1_a" model="healthcare.bed">
+        <field name="name">ICU-1-A</field>
+        <field name="room_id" ref="room_northside_icu1"/>
+        <field name="bed_type">icu</field>
+        <field name="daily_rate">550.0</field>
+        <field name="status">occupied</field>
+    </record>
+    <record id="bed_northside_icu1_b" model="healthcare.bed">
+        <field name="name">ICU-1-B</field>
+        <field name="room_id" ref="room_northside_icu1"/>
+        <field name="bed_type">icu</field>
+        <field name="daily_rate">550.0</field>
+        <field name="status">available</field>
+    </record>
+    <record id="bed_riverside_201_a" model="healthcare.bed">
+        <field name="name">201-A</field>
+        <field name="room_id" ref="room_riverside_201"/>
+        <field name="bed_type">general</field>
+        <field name="daily_rate">110.0</field>
+        <field name="status">occupied</field>
+    </record>
+    <record id="bed_riverside_201_b" model="healthcare.bed">
+        <field name="name">201-B</field>
+        <field name="room_id" ref="room_riverside_201"/>
+        <field name="bed_type">general</field>
+        <field name="daily_rate">110.0</field>
+        <field name="status">available</field>
+    </record>
+    <record id="bed_riverside_202_a" model="healthcare.bed">
+        <field name="name">202-A</field>
+        <field name="room_id" ref="room_riverside_202"/>
+        <field name="bed_type">general</field>
+        <field name="daily_rate">160.0</field>
+        <field name="status">maintenance</field>
+    </record>
+
+    <!-- Admissions -->
+    <!-- Hero patient: Maria Santos, ongoing emergency admission for a hyperglycemic crisis -->
+    <record id="admission_maria_santos" model="healthcare.admission">
+        <field name="patient_id" ref="custom_healthcare.patient_maria_santos"/>
+        <field name="practice_id" ref="custom_healthcare.practice_northside"/>
+        <field name="bed_id" ref="bed_northside_icu1_a"/>
+        <field name="admission_type">emergency</field>
+        <field name="admitting_physician_id" ref="base.user_admin"/>
+        <field name="admission_date" eval="(datetime.today() - relativedelta(days=3)).strftime('%Y-%m-%d 06:40:00')"/>
+        <field name="expected_discharge_date" eval="(datetime.today() + relativedelta(days=1)).strftime('%Y-%m-%d')"/>
+        <field name="admission_reason">Admitted via ED with uncontrolled blood glucose and dehydration.</field>
+        <field name="diagnosis">Diabetic ketoacidosis on a background of poorly controlled Type 2 diabetes.</field>
+        <field name="state">admitted</field>
+    </record>
+
+    <!-- James Okeke, COPD exacerbation, long-stay + discharge overdue (for the CDS alert demo) -->
+    <record id="admission_james_okeke" model="healthcare.admission">
+        <field name="patient_id" ref="custom_healthcare.patient_james_okeke"/>
+        <field name="practice_id" ref="custom_healthcare.practice_riverside"/>
+        <field name="bed_id" ref="bed_riverside_201_a"/>
+        <field name="admission_type">emergency</field>
+        <field name="admitting_physician_id" ref="base.user_admin"/>
+        <field name="admission_date" eval="(datetime.today() - relativedelta(days=9)).strftime('%Y-%m-%d 14:10:00')"/>
+        <field name="expected_discharge_date" eval="(datetime.today() - relativedelta(days=2)).strftime('%Y-%m-%d')"/>
+        <field name="admission_reason">Acute COPD exacerbation with hypoxia, admitted for nebulized bronchodilators and oxygen therapy.</field>
+        <field name="diagnosis">Acute exacerbation of COPD.</field>
+        <field name="state">admitted</field>
+    </record>
+
+    <!-- Robert Lee, completed stay, discharged and bed already turned over -->
+    <record id="admission_robert_lee" model="healthcare.admission">
+        <field name="patient_id" ref="custom_healthcare.patient_robert_lee"/>
+        <field name="practice_id" ref="custom_healthcare.practice_northside"/>
+        <field name="bed_id" ref="bed_northside_101_a"/>
+        <field name="admission_type">planned</field>
+        <field name="admitting_physician_id" ref="base.user_admin"/>
+        <field name="admission_date" eval="(datetime.today() - relativedelta(days=10)).strftime('%Y-%m-%d 09:00:00')"/>
+        <field name="expected_discharge_date" eval="(datetime.today() - relativedelta(days=7)).strftime('%Y-%m-%d')"/>
+        <field name="actual_discharge_date" eval="(datetime.today() - relativedelta(days=7)).strftime('%Y-%m-%d 11:30:00')"/>
+        <field name="admission_reason">Elective admission for observation and IV therapy.</field>
+        <field name="diagnosis">Cellulitis of the lower limb, responding to IV antibiotics.</field>
+        <field name="state">discharged</field>
+        <field name="discharge_condition">recovered</field>
+        <field name="discharge_summary">Completed 3-day course of IV antibiotics with good response. Cellulitis resolved. Discharged on oral antibiotics with GP follow-up in 1 week.</field>
+    </record>
+
+    <!-- Sofia Martinez, same-day case, bed still being turned over -->
+    <record id="admission_sofia_martinez" model="healthcare.admission">
+        <field name="patient_id" ref="custom_healthcare.patient_sofia_martinez"/>
+        <field name="practice_id" ref="custom_healthcare.practice_northside"/>
+        <field name="bed_id" ref="bed_northside_102_a"/>
+        <field name="admission_type">day_case</field>
+        <field name="admitting_physician_id" ref="base.user_admin"/>
+        <field name="admission_date" eval="datetime.today().strftime('%Y-%m-%d 07:30:00')"/>
+        <field name="expected_discharge_date" eval="datetime.today().strftime('%Y-%m-%d')"/>
+        <field name="actual_discharge_date" eval="datetime.today().strftime('%Y-%m-%d 13:15:00')"/>
+        <field name="admission_reason">Day-case minor procedure with same-day recovery.</field>
+        <field name="diagnosis">Minor day-case procedure, uncomplicated recovery.</field>
+        <field name="state">discharged</field>
+        <field name="discharge_condition">recovered</field>
+        <field name="discharge_summary">Procedure uncomplicated. Patient recovered well and discharged same day with routine follow-up advice.</field>
+    </record>
+
+    <!-- Aisha Khan, planned admission awaiting bed assignment -->
+    <record id="admission_aisha_khan" model="healthcare.admission">
+        <field name="patient_id" ref="custom_healthcare.patient_aisha_khan"/>
+        <field name="practice_id" ref="custom_healthcare.practice_northside"/>
+        <field name="admission_type">planned</field>
+        <field name="admission_date" eval="(datetime.today() + relativedelta(days=2)).strftime('%Y-%m-%d 08:00:00')"/>
+        <field name="admission_reason">Planned admission for asthma review and step-up therapy monitoring.</field>
+        <field name="state">draft</field>
+    </record>
+
+    <!-- Bed transfer history for the long-stay COPD patient -->
+    <record id="transfer_james_okeke_1" model="healthcare.bed.transfer">
+        <field name="admission_id" ref="admission_james_okeke"/>
+        <field name="from_bed_id" ref="bed_riverside_201_b"/>
+        <field name="to_bed_id" ref="bed_riverside_201_a"/>
+        <field name="transfer_date" eval="(datetime.today() - relativedelta(days=8)).strftime('%Y-%m-%d 10:00:00')"/>
+        <field name="reason">Moved closer to the nursing station for closer oxygen monitoring.</field>
+        <field name="transferred_by" ref="base.user_admin"/>
+    </record>
+</odoo>

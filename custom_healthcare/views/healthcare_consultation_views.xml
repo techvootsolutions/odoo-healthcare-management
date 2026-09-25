@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_healthcare_consultation_list" model="ir.ui.view">
+        <field name="name">healthcare.consultation.list</field>
+        <field name="model">healthcare.consultation</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="consultation_date"/>
+                <field name="patient_id"/>
+                <field name="practitioner_id"/>
+                <field name="practice_id"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_healthcare_consultation_form" model="ir.ui.view">
+        <field name="name">healthcare.consultation.form</field>
+        <field name="model">healthcare.consultation</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_start" type="object" string="Start" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_done" type="object" string="Complete" class="oe_highlight"
+                            invisible="state not in ('draft', 'in_progress')"/>
+                    <button name="action_create_referral" type="object" string="Create Referral"
+                            invisible="state == 'cancelled'"/>
+                    <button name="action_create_lab_request" type="object" string="Order Labs"
+                            invisible="state == 'cancelled'"/>
+                    <button name="action_create_prescription" type="object" string="Prescribe"
+                            invisible="state == 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="patient_id"/>
+                            <field name="practice_id"/>
+                            <field name="practitioner_id"/>
+                        </group>
+                        <group>
+                            <field name="consultation_date"/>
+                            <field name="appointment_id"/>
+                            <field name="follow_up_date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Chief Complaint">
+                            <field name="chief_complaint"/>
+                        </page>
+                        <page string="History">
+                            <field name="history"/>
+                        </page>
+                        <page string="Examination &amp; Vitals">
+                            <group>
+                                <field name="vital_bp"/>
+                                <field name="vital_hr"/>
+                                <field name="vital_temp"/>
+                                <field name="vital_weight"/>
+                                <field name="vital_bmi"/>
+                            </group>
+                            <field name="clinical_examination"/>
+                        </page>
+                        <page string="Diagnosis">
+                            <field name="disease_ids" widget="many2many_tags"/>
+                            <field name="diagnosis"/>
+                        </page>
+                        <page string="Treatment &amp; Medication">
+                            <field name="treatment"/>
+                            <field name="medication"/>
+                            <field name="investigations"/>
+                        </page>
+                        <page string="Notes &amp; Follow-up">
+                            <field name="clinical_notes"/>
+                            <field name="follow_up_plan"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_healthcare_consultation_graph" model="ir.ui.view">
+        <field name="name">healthcare.consultation.graph</field>
+        <field name="model">healthcare.consultation</field>
+        <field name="arch" type="xml">
+            <graph string="Consultations" type="line" sample="1">
+                <field name="consultation_date" interval="month"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_healthcare_consultation" model="ir.actions.act_window">
+        <field name="name">Consultations</field>
+        <field name="res_model">healthcare.consultation</field>
+        <field name="view_mode">list,form,graph</field>
+    </record>
+</odoo>

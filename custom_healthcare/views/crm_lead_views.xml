@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_crm_lead_form_healthcare" model="ir.ui.view">
+        <field name="name">crm.lead.form.healthcare</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_create_healthcare_practice" type="object"
+                        class="oe_stat_button" icon="fa-hospital-o"
+                        groups="custom_healthcare.group_healthcare_manager">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Practice</span>
+                    </div>
+                </button>
+            </xpath>
+            <xpath expr="//page[@name='lead']" position="after">
+                <page string="Healthcare" name="healthcare"
+                      groups="custom_healthcare.group_healthcare_manager">
+                    <group>
+                        <field name="healthcare_practice_id"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="healthcare_patient_portal_rule" model="ir.rule">
+        <field name="name">Portal: own patient record</field>
+        <field name="model_id" ref="custom_healthcare.model_healthcare_patient"/>
+        <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+    <record id="healthcare_appointment_portal_rule" model="ir.rule">
+        <field name="name">Portal: own appointments</field>
+        <field name="model_id" ref="custom_healthcare.model_healthcare_appointment"/>
+        <field name="domain_force">[('patient_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+    <record id="healthcare_care_plan_portal_rule" model="ir.rule">
+        <field name="name">Portal: own care plans</field>
+        <field name="model_id" ref="custom_healthcare.model_healthcare_care_plan"/>
+        <field name="domain_force">[('patient_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+    <record id="healthcare_lab_request_portal_rule" model="ir.rule">
+        <field name="name">Portal: own lab requests</field>
+        <field name="model_id" ref="custom_healthcare.model_healthcare_lab_request"/>
+        <field name="domain_force">[('patient_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+    <record id="healthcare_prescription_portal_rule" model="ir.rule">
+        <field name="name">Portal: own prescriptions</field>
+        <field name="model_id" ref="custom_healthcare.model_healthcare_prescription"/>
+        <field name="domain_force">[('patient_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+</odoo>

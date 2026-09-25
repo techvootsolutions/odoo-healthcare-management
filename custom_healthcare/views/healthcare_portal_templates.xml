@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- /my home tiles -->
+    <template id="portal_my_home_healthcare" name="Healthcare" customize_show="True"
+              inherit_id="portal.portal_my_home" priority="40">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_service_category_enable" t-value="True"/>
+        </xpath>
+        <!-- Same category + config_card only so all healthcare tiles share col-md-6 sizing -->
+        <div id="portal_service_category" position="inside">
+            <t t-if="request.env['healthcare.patient'].sudo().search_count([('partner_id', '=', request.env.user.partner_id.id)]) or (request.env.user.has_group('base.group_user') and request.env['healthcare.patient'].sudo().search_count([]))">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/web/static/img/smiling_face.svg'"/>
+                    <t t-set="title">My Healthcare</t>
+                    <t t-set="url" t-value="'/my/healthcare'"/>
+                    <t t-set="text">Your appointments, care plans and results</t>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+            </t>
+            <t t-if="request.env.user.has_group('custom_healthcare.group_healthcare_gp')">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/web/static/img/folder.svg'"/>
+                    <t t-set="title">GP Workspace</t>
+                    <t t-set="url" t-value="'/my/healthcare/gp'"/>
+                    <t t-set="text">Today's clinic, upcoming visits and alerts</t>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+            </t>
+            <t t-if="request.env.user.has_group('custom_healthcare.group_healthcare_coordinator')">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/web/static/img/empty_folder.svg'"/>
+                    <t t-set="title">Care Coordinator</t>
+                    <t t-set="url" t-value="'/my/healthcare/coordinator'"/>
+                    <t t-set="text">Caseload, overdue follow-ups and alerts</t>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+            </t>
+        </div>
+    </template>
+
+    <template id="portal_healthcare_breadcrumbs" name="Healthcare breadcrumbs"
+              inherit_id="portal.portal_breadcrumbs" priority="40">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'healthcare_home'" class="breadcrumb-item active">My Healthcare</li>
+            <li t-if="page_name in ('healthcare_appointments', 'healthcare_appointment_new', 'healthcare_care_plans', 'healthcare_labs', 'healthcare_prescriptions')"
+                class="breadcrumb-item">
+                <a href="/my/healthcare">My Healthcare</a>
+            </li>
+            <li t-if="page_name == 'healthcare_appointments'" class="breadcrumb-item active">Appointments</li>
+            <li t-if="page_name == 'healthcare_appointment_new'" class="breadcrumb-item active">Book Appointment</li>
+            <li t-if="page_name == 'healthcare_care_plans'" class="breadcrumb-item active">Care Plans</li>
+            <li t-if="page_name == 'healthcare_labs'" class="breadcrumb-item active">Lab Results</li>
+            <li t-if="page_name == 'healthcare_prescriptions'" class="breadcrumb-item active">Prescriptions</li>
+            <li t-if="page_name == 'healthcare_gp'" class="breadcrumb-item active">GP Workspace</li>
+            <li t-if="page_name == 'healthcare_coordinator'" class="breadcrumb-item active">Care Coordinator</li>
+        </xpath>
+    </template>
+
+    <template id="portal_healthcare_nav" name="Healthcare Portal Navigation">
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a t-attf-class="nav-link#{' active' if page_name == 'healthcare_home' else ''}"
+                   href="/my/healthcare">Overview</a>
+            </li>
+            <li class="nav-item">
+                <a t-attf-class="nav-link#{' active' if page_name in ('healthcare_appointments', 'healthcare_appointment_new') else ''}"
+                   href="/my/healthcare/appointments">Appointments</a>
+            </li>
+            <li class="nav-item">
+                <a t-attf-class="nav-link#{' active' if page_name == 'healthcare_care_plans' else ''}"
+                   href="/my/healthcare/care-plans">Care Plans</a>
+            </li>
+            <li class="nav-item">
+                <a t-attf-class="nav-link#{' active' if page_name == 'healthcare_labs' else ''}"
+                   href="/my/healthcare/labs">Lab Results</a>
+            </li>
+            <li class="nav-item">
+                <a t-attf-class="nav-link#{' active' if page_name == 'healthcare_prescriptions' else ''}"
+                   href="/my/healthcare/prescriptions">Prescriptions</a>
+            </li>
+        </ul>
+    </template>
+
+    <template id="portal_no_patient" name="No Patient Linked">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="container mt-4">
+                <div class="alert alert-warning" role="alert">
+                    No patient record is linked to this portal user.
+                    Ask your care team to link your contact to a patient profile.
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Shared helpers -->
+    <template id="portal_stat_cards" name="Healthcare Stat Cards">
+        <div class="row g-3 mb-4">
+            <div t-foreach="stats" t-as="stat" class="col-6 col-md-3">
+                <div t-attf-class="border rounded p-3 h-100 #{stat.get('tone', 'bg-100')}">
+                    <div class="text-muted small text-uppercase"><t t-esc="stat['label']"/></div>
+                    <div class="fs-3 fw-bold lh-1 mt-1"><t t-esc="stat['value']"/></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="portal_empty_state" name="Healthcare Empty State">
+        <div class="alert alert-light border text-muted mb-0" role="status">
+            <t t-esc="empty_message"/>
+        </div>
+    </template>
+
+    <template id="portal_appointment_table" name="Appointment Table">
+        <t t-if="not appointments">
+            <t t-set="empty_message" t-value="empty_message or 'No appointments to show.'"/>
+            <t t-call="custom_healthcare.portal_empty_state"/>
+        </t>
+        <t t-else="" t-call="portal.portal_table">
+            <thead>
+                <tr>
+                    <th>When</th>
+                    <th>Patient</th>
+                    <th>Type</th>
+                    <th t-if="show_practitioner">Practitioner</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr t-foreach="appointments" t-as="appt">
+                    <td><span t-field="appt.start"/></td>
+                    <td><span t-field="appt.patient_id"/></td>
+                    <td><span t-field="appt.appointment_type"/></td>
+                    <td t-if="show_practitioner"><span t-field="appt.practitioner_id"/></td>
+                    <td>
+                        <span t-if="appt.state == 'scheduled'" class="badge rounded-pill text-bg-primary"><span t-field="appt.state"/></span>
+                        <span t-elif="appt.state == 'requested'" class="badge rounded-pill text-bg-info">Pending Confirmation</span>
+                        <span t-else="" class="badge rounded-pill text-bg-secondary"><span t-field="appt.state"/></span>
+                    </td>
+                </tr>
+            </tbody>
+        </t>
+    </template>
+
+    <template id="portal_alert_table" name="Alert Table">
+        <t t-if="not alerts">
+            <t t-set="empty_message" t-value="'No open alerts.'"/>
+            <t t-call="custom_healthcare.portal_empty_state"/>
+        </t>
+        <t t-else="" t-call="portal.portal_table">
+            <thead>
+                <tr>
+                    <th>Priority</th>
+                    <th>Alert</th>
+                    <th>Patient</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr t-foreach="alerts" t-as="alert">
+                    <td>
+                        <span t-if="alert.priority == '3'" class="badge rounded-pill text-bg-danger"><span t-field="alert.priority"/></span>
+                        <span t-elif="alert.priority == '2'" class="badge rounded-pill text-bg-warning"><span t-field="alert.priority"/></span>
+                        <span t-else="" class="badge rounded-pill text-bg-secondary"><span t-field="alert.priority"/></span>
+                    </td>
+                    <td><t t-esc="alert.name"/></td>
+                    <td><span t-field="alert.patient_id"/></td>
+                    <td><span t-field="alert.alert_type"/></td>
+                </tr>
+            </tbody>
+        </t>
+    </template>
+
+    <!-- Patient pages -->
+    <template id="portal_healthcare_home" name="My Healthcare">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="o_portal_wrap container">
+                <div class="row mb-3 align-items-end">
+                    <div class="col">
+                        <h2 class="mb-1">My Healthcare</h2>
+                        <p class="text-muted mb-0" t-if="patient">
+                            <strong t-esc="patient.name"/>
+                            <span class="mx-1">·</span>
+                            <span t-esc="patient.patient_number"/>
+                        </p>
+                    </div>
+                    <div class="col-auto">
+                        <a class="btn btn-primary" href="/my/healthcare/appointments/new">
+                            <i class="fa fa-calendar-plus-o me-1"/> Book Appointment
+                        </a>
+                    </div>
+                </div>
+                <t t-call="custom_healthcare.portal_healthcare_nav"/>
+                <t t-call="custom_healthcare.portal_stat_cards"/>
+                <h4 class="mb-3">Recent Appointments</h4>
+                <t t-set="show_practitioner" t-value="True"/>
+                <t t-call="custom_healthcare.portal_appointment_table"/>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_healthcare_appointments" name="My Appointments">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="o_portal_wrap container">
+                <div class="row mb-3 align-items-end">
+                    <div class="col">
+                        <h2 class="mb-1">Appointments</h2>
+                    </div>
+                    <div class="col-auto">
+                        <a class="btn btn-primary" href="/my/healthcare/appointments/new">
+                            <i class="fa fa-calendar-plus-o me-1"/> Book Appointment
+                        </a>
+                    </div>
+                </div>
+                <t t-call="custom_healthcare.portal_healthcare_nav"/>
+
+                <div t-if="request_success" class="alert alert-success" role="alert">
+                    Your appointment request has been sent. The practice will confirm the
+                    exact date, time and practitioner and it will appear here as
+                    "Pending Confirmation" in the meantime.
+                </div>
+
+                <t t-set="show_practitioner" t-value="True"/>
+                <t t-call="custom_healthcare.portal_appointment_table"/>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_healthcare_appointment_new" name="Book an Appointment">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="o_portal_wrap container">
+                <h2 class="mb-3">Book an Appointment</h2>
+                <t t-call="custom_healthcare.portal_healthcare_nav"/>
+
+                <div t-if="request_error" class="alert alert-danger" role="alert">
+                    <t t-esc="request_error"/>
+                </div>
+
+                <div class="card" style="max-width: 720px;">
+                    <div class="card-body">
+                        <p class="text-muted small mb-3">
+                            Tell us when you'd prefer to come in — the practice will confirm
+                            the exact time and practitioner, and it will show up under
+                            Appointments as "Pending Confirmation" until then.
+                        </p>
+                        <form action="/my/healthcare/appointments/request" method="post" class="row g-3">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="appointment_type">Visit Type</label>
+                                <select class="form-select" id="appointment_type" name="appointment_type">
+                                    <t t-foreach="appointment_types" t-as="type_item">
+                                        <option t-att-value="type_item[0]"
+                                                t-att-selected="post.get('appointment_type') == type_item[0]">
+                                            <t t-esc="type_item[1]"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="preferred_date">Preferred Date &amp; Time</label>
+                                <input type="datetime-local" class="form-control" id="preferred_date"
+                                       name="preferred_date" required="required"
+                                       t-att-value="post.get('preferred_date')"/>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="reason">Reason for Visit</label>
+                                <input type="text" class="form-control" id="reason" name="reason"
+                                       required="required" t-att-value="post.get('reason')"/>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="notes">Additional Notes (optional)</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="2"><t t-esc="post.get('notes')"/></textarea>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <button type="submit" class="btn btn-primary">Send Request</button>
+                                <a href="/my/healthcare/appointments" class="btn btn-link">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_healthcare_care_plans" name="My Care Plans">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="o_portal_wrap container">
+                <h2 class="mb-3">Care Plans</h2>
+                <t t-call="custom_healthcare.portal_healthcare_nav"/>
+                <t t-if="not care_plans">
+                    <t t-set="empty_message" t-value="'No care plans yet.'"/>
+                    <t t-call="custom_healthcare.portal_empty_state"/>
+                </t>
+                <t t-else="" t-call="portal.portal_table">
+                    <thead>
+                        <tr><th>Name</th><th>Condition</th><th>Status</th><th>Compliance</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="care_plans" t-as="plan">
+                            <td t-esc="plan.name"/>
+                            <td t-esc="plan.disease_id.name"/>
+                            <td><span t-field="plan.state"/></td>
+                            <td><t t-esc="'%.0f' % plan.compliance_rate"/>%</td>
+                        </tr>
+                    </tbody>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_healthcare_labs" name="My Lab Results">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="o_portal_wrap container">
+                <h2 class="mb-3">Lab Requests / Results</h2>
+                <t t-call="custom_healthcare.portal_healthcare_nav"/>
+                <t t-if="not labs">
+                    <t t-set="empty_message" t-value="'No lab requests yet.'"/>
+                    <t t-call="custom_healthcare.portal_empty_state"/>
+                </t>
+                <t t-foreach="labs" t-as="lab">
+                    <div class="border rounded mb-3 overflow-hidden">
+                        <div class="bg-100 px-3 py-2 d-flex justify-content-between flex-wrap gap-2">
+                            <strong t-esc="lab.name"/>
+                            <span>
+                                <span t-field="lab.request_date"/>
+                                <span class="mx-1">·</span>
+                                <span t-field="lab.state"/>
+                            </span>
+                        </div>
+                        <t t-call="portal.portal_table">
+                            <thead>
+                                <tr><th>Test</th><th>Result</th><th>Abnormal</th><th>Review</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="lab.line_ids" t-as="line">
+                                    <td t-esc="line.test_type_id.name"/>
+                                    <td><t t-esc="line.result_value"/> <t t-esc="line.result_unit"/></td>
+                                    <td>
+                                        <span t-if="line.is_abnormal" class="badge text-bg-danger">Yes</span>
+                                        <span t-else="" class="text-muted">No</span>
+                                    </td>
+                                    <td t-esc="line.review_state"/>
+                                </tr>
+                            </tbody>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_healthcare_prescriptions" name="My Prescriptions">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="o_portal_wrap container">
+                <h2 class="mb-3">Prescriptions</h2>
+                <t t-call="custom_healthcare.portal_healthcare_nav"/>
+                <t t-if="not prescriptions">
+                    <t t-set="empty_message" t-value="'No prescriptions yet.'"/>
+                    <t t-call="custom_healthcare.portal_empty_state"/>
+                </t>
+                <t t-foreach="prescriptions" t-as="rx">
+                    <div class="border rounded mb-3 overflow-hidden">
+                        <div class="bg-100 px-3 py-2 d-flex justify-content-between flex-wrap gap-2">
+                            <strong t-esc="rx.name"/>
+                            <span>
+                                <span t-field="rx.prescription_date"/>
+                                <span class="mx-1">·</span>
+                                <span t-field="rx.state"/>
+                            </span>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item" t-foreach="rx.line_ids" t-as="line">
+                                <strong t-esc="line.medicine_id.name"/>
+                                <span class="text-muted" t-if="line.strength"> · <t t-esc="line.strength"/></span>
+                                <div class="small text-muted">
+                                    <t t-esc="line.dosage"/>
+                                    <t t-esc="line.frequency"/>
+                                    (<t t-esc="line.duration"/>)
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- GP workspace -->
+    <template id="portal_healthcare_gp" name="GP Portal">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="o_portal_wrap container">
+                <div class="mb-3">
+                    <h2 class="mb-1">GP Workspace</h2>
+                    <p class="text-muted mb-0">
+                        Clinic overview for <strong t-esc="request.env.user.name"/>
+                        <span t-if="today"> · <span t-esc="today"/></span>
+                    </p>
+                </div>
+
+                <t t-call="custom_healthcare.portal_stat_cards"/>
+
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <section class="mb-4">
+                            <h4 class="mb-3">Today's Appointments</h4>
+                            <t t-set="appointments" t-value="appointments_today"/>
+                            <t t-set="show_practitioner" t-value="False"/>
+                            <t t-set="empty_message" t-value="'No appointments scheduled for today.'"/>
+                            <t t-call="custom_healthcare.portal_appointment_table"/>
+                        </section>
+                        <section>
+                            <h4 class="mb-3">Upcoming</h4>
+                            <t t-set="appointments" t-value="appointments_upcoming"/>
+                            <t t-set="empty_message" t-value="'No upcoming appointments.'"/>
+                            <t t-call="custom_healthcare.portal_appointment_table"/>
+                        </section>
+                    </div>
+                    <div class="col-lg-5">
+                        <section>
+                            <h4 class="mb-3">Open Alerts</h4>
+                            <t t-call="custom_healthcare.portal_alert_table"/>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Care Coordinator workspace -->
+    <template id="portal_healthcare_coordinator" name="Coordinator Portal">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="o_portal_wrap container">
+                <div class="mb-3">
+                    <h2 class="mb-1">Care Coordinator Workspace</h2>
+                    <p class="text-muted mb-0">
+                        Caseload for <strong t-esc="request.env.user.name"/>
+                        <span t-if="today"> · <span t-esc="today"/></span>
+                    </p>
+                </div>
+
+                <t t-call="custom_healthcare.portal_stat_cards"/>
+
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <section class="mb-4">
+                            <h4 class="mb-3">Caseload</h4>
+                            <t t-if="not patients">
+                                <t t-set="empty_message" t-value="'No patients assigned.'"/>
+                                <t t-call="custom_healthcare.portal_empty_state"/>
+                            </t>
+                            <t t-else="" t-call="portal.portal_table">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Risk</th>
+                                        <th>Practice</th>
+                                        <th>Primary GP</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="patients" t-as="p">
+                                        <td>
+                                            <strong t-esc="p.name"/>
+                                            <div class="small text-muted" t-esc="p.patient_number"/>
+                                        </td>
+                                        <td>
+                                            <span t-if="p.risk_level == 'critical'" class="badge rounded-pill text-bg-danger"><span t-field="p.risk_level"/></span>
+                                            <span t-elif="p.risk_level == 'high'" class="badge rounded-pill text-bg-warning"><span t-field="p.risk_level"/></span>
+                                            <span t-else="" class="badge rounded-pill text-bg-secondary"><span t-field="p.risk_level"/></span>
+                                        </td>
+                                        <td><span t-field="p.practice_id"/></td>
+                                        <td><span t-field="p.primary_gp_id"/></td>
+                                    </tr>
+                                </tbody>
+                            </t>
+                        </section>
+                    </div>
+                    <div class="col-lg-6">
+                        <section class="mb-4">
+                            <h4 class="mb-3">Overdue Follow-ups</h4>
+                            <t t-if="not overdue_lines">
+                                <t t-set="empty_message" t-value="'No overdue follow-ups.'"/>
+                                <t t-call="custom_healthcare.portal_empty_state"/>
+                            </t>
+                            <t t-else="" t-call="portal.portal_table">
+                                <thead>
+                                    <tr>
+                                        <th>Activity</th>
+                                        <th>Patient</th>
+                                        <th>Due</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="overdue_lines" t-as="line">
+                                        <td>
+                                            <t t-esc="line.name"/>
+                                            <div class="small text-muted"><span t-field="line.activity_type"/></div>
+                                        </td>
+                                        <td><span t-field="line.care_plan_id.patient_id"/></td>
+                                        <td><span t-field="line.next_due_date"/></td>
+                                        <td>
+                                            <span class="badge rounded-pill text-bg-warning">
+                                                <span t-field="line.state"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </t>
+                        </section>
+                        <section>
+                            <h4 class="mb-3">Open Alerts</h4>
+                            <t t-call="custom_healthcare.portal_alert_table"/>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Public patient self-registration -->
+    <template id="patient_register_form" name="Patient Registration">
+        <t t-call="website.layout">
+            <div class="container my-5" style="max-width: 640px;">
+                <h1 class="mb-1">Patient Registration</h1>
+                <p class="text-muted mb-4">
+                    Fill in your details below. We'll create your patient record and
+                    email you a link to set up your portal password.
+                </p>
+
+                <div t-if="error" class="alert alert-danger" role="alert">
+                    <t t-esc="error"/>
+                </div>
+
+                <form action="/patient/register" method="post" class="row g-3">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <!-- Honeypot: left empty by humans, hidden from screen readers and sighted users -->
+                    <div class="d-none" aria-hidden="true">
+                        <label for="registration_hp">Leave this field empty</label>
+                        <input type="text" id="registration_hp" name="registration_hp"
+                               tabindex="-1" autocomplete="off"/>
+                    </div>
+
+                    <div class="col-md-8">
+                        <label class="form-label" for="name">Full Name *</label>
+                        <input type="text" class="form-control" id="name" name="name" required="required"
+                               t-att-value="post.get('name')"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="gender">Gender</label>
+                        <select class="form-select" id="gender" name="gender">
+                            <t t-set="gender" t-value="post.get('gender')"/>
+                            <option value="unknown" t-att-selected="gender in (None, '', 'unknown')">Prefer not to say</option>
+                            <option value="male" t-att-selected="gender == 'male'">Male</option>
+                            <option value="female" t-att-selected="gender == 'female'">Female</option>
+                            <option value="other" t-att-selected="gender == 'other'">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="email">Email *</label>
+                        <input type="email" class="form-control" id="email" name="email" required="required"
+                               t-att-value="post.get('email')"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="phone">Phone</label>
+                        <input type="tel" class="form-control" id="phone" name="phone"
+                               t-att-value="post.get('phone')"/>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="date_of_birth">Date of Birth</label>
+                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth"
+                               t-att-value="post.get('date_of_birth')"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="national_id">National ID</label>
+                        <input type="text" class="form-control" id="national_id" name="national_id"
+                               t-att-value="post.get('national_id')"/>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="emergency_contact">Emergency Contact Name</label>
+                        <input type="text" class="form-control" id="emergency_contact" name="emergency_contact"
+                               t-att-value="post.get('emergency_contact')"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="emergency_phone">Emergency Contact Phone</label>
+                        <input type="tel" class="form-control" id="emergency_phone" name="emergency_phone"
+                               t-att-value="post.get('emergency_phone')"/>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                        <a href="/web/login" class="btn btn-link">Already have an account? Sign in</a>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <template id="patient_register_success" name="Patient Registration Success">
+        <t t-call="website.layout">
+            <div class="container my-5" style="max-width: 640px;">
+                <div class="alert alert-success" role="alert">
+                    <h4 class="alert-heading">Registration received</h4>
+                    <p class="mb-0">
+                        Thanks for registering. We've sent an email with a link to set up
+                        your portal password. Once that's done you can sign in to view your
+                        appointments, care plans and results.
+                    </p>
+                </div>
+                <a href="/web/login" class="btn btn-primary">Go to Sign In</a>
+            </div>
+        </t>
+    </template>
+</odoo>

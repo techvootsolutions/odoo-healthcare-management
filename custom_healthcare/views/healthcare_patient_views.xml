@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_healthcare_patient_list" model="ir.ui.view">
+        <field name="name">healthcare.patient.list</field>
+        <field name="model">healthcare.patient</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="patient_number"/>
+                <field name="name"/>
+                <field name="age"/>
+                <field name="gender"/>
+                <field name="practice_id"/>
+                <field name="primary_gp_id"/>
+                <field name="care_coordinator_id"/>
+                <field name="risk_level"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_healthcare_patient_form" model="ir.ui.view">
+        <field name="name">healthcare.patient.form</field>
+        <field name="model">healthcare.patient</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_appointments" type="object" class="oe_stat_button" icon="fa-calendar">
+                            <field name="appointment_count" widget="statinfo" string="Appointments"/>
+                        </button>
+                        <button name="action_view_consultations" type="object" class="oe_stat_button" icon="fa-stethoscope">
+                            <field name="consultation_count" widget="statinfo" string="Consultations"/>
+                        </button>
+                        <button name="action_view_care_plans" type="object" class="oe_stat_button" icon="fa-heartbeat">
+                            <field name="care_plan_count" widget="statinfo" string="Care Plans"/>
+                        </button>
+                        <button name="action_view_lab_requests" type="object" class="oe_stat_button" icon="fa-flask">
+                            <field name="lab_request_count" widget="statinfo" string="Labs"/>
+                        </button>
+                        <button name="action_view_prescriptions" type="object" class="oe_stat_button" icon="fa-medkit">
+                            <field name="prescription_count" widget="statinfo" string="Rx"/>
+                        </button>
+                        <button name="action_view_allied_sessions" type="object" class="oe_stat_button" icon="fa-user-md">
+                            <field name="allied_session_count" widget="statinfo" string="Allied"/>
+                        </button>
+                    </div>
+                    <field name="image_1920" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Patient Name"/></h1>
+                        <h3><field name="patient_number"/></h3>
+                    </div>
+                    <group>
+                        <group string="Identity">
+                            <field name="date_of_birth"/>
+                            <field name="age"/>
+                            <field name="gender"/>
+                            <field name="national_id"/>
+                            <field name="phone"/>
+                            <field name="email"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group string="Care Assignment">
+                            <field name="practice_id"/>
+                            <field name="primary_gp_id"/>
+                            <field name="care_coordinator_id"/>
+                            <field name="risk_level"/>
+                            <field name="clinical_risk_score"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Clinical Summary">
+                            <group>
+                                <group>
+                                    <field name="blood_group"/>
+                                    <field name="smoking_status"/>
+                                    <field name="alcohol_status"/>
+                                    <field name="vaccination_status"/>
+                                </group>
+                                <group>
+                                    <field name="chronic_disease_ids" widget="many2many_tags"/>
+                                    <field name="active_medication_summary"/>
+                                    <field name="clinical_alerts"/>
+                                </group>
+                            </group>
+                            <separator string="Allergies"/>
+                            <field name="allergies"/>
+                            <separator string="Family History"/>
+                            <field name="family_history"/>
+                        </page>
+                        <page string="Medical Scheme">
+                            <group>
+                                <field name="medical_scheme"/>
+                                <field name="membership_number"/>
+                                <field name="scheme_plan"/>
+                                <field name="scheme_validity"/>
+                            </group>
+                        </page>
+                        <page string="Emergency &amp; Consent">
+                            <group>
+                                <field name="emergency_contact"/>
+                                <field name="emergency_phone"/>
+                                <field name="consent_notes"/>
+                            </group>
+                        </page>
+                        <page string="Care Plans">
+                            <field name="care_plan_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="disease_id"/>
+                                    <field name="state"/>
+                                    <field name="compliance_rate"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Registry">
+                            <field name="registry_ids">
+                                <list>
+                                    <field name="disease_id"/>
+                                    <field name="risk_level"/>
+                                    <field name="next_review_date"/>
+                                    <field name="compliance_state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_healthcare_patient_search" model="ir.ui.view">
+        <field name="name">healthcare.patient.search</field>
+        <field name="model">healthcare.patient</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="patient_number"/>
+                <field name="practice_id"/>
+                <field name="care_coordinator_id"/>
+                <filter string="High Risk" name="high_risk" domain="[('risk_level', 'in', ['high', 'critical'])]"/>
+                <filter string="My Caseload" name="my_caseload" domain="[('care_coordinator_id', '=', uid)]"/>
+                <group>
+                    <filter string="Practice" name="group_practice" context="{'group_by': 'practice_id'}"/>
+                    <filter string="Risk" name="group_risk" context="{'group_by': 'risk_level'}"/>
+                    <filter string="Coordinator" name="group_coord" context="{'group_by': 'care_coordinator_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_healthcare_patient" model="ir.actions.act_window">
+        <field name="name">Patients</field>
+        <field name="res_model">healthcare.patient</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record id="action_healthcare_patient_high_risk" model="ir.actions.act_window">
+        <field name="name">High Risk Patients</field>
+        <field name="res_model">healthcare.patient</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('risk_level', 'in', ['high', 'critical'])]</field>
+    </record>
+
+    <record id="action_healthcare_coordinator_caseload" model="ir.actions.act_window">
+        <field name="name">My Caseload</field>
+        <field name="res_model">healthcare.patient</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('care_coordinator_id', '=', uid)]</field>
+        <field name="context">{'search_default_my_caseload': 1}</field>
+    </record>
+</odoo>

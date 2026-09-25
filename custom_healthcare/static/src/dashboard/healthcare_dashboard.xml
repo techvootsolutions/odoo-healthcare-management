@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="custom_healthcare.HealthcareChart">
+        <div class="hc-chart" t-att-style="'height:' + props.height + 'px'">
+            <canvas t-ref="canvas" role="img" t-att-aria-label="props.ariaLabel"/>
+        </div>
+    </t>
+
+    <!-- Card header with optional chart/table toggle -->
+    <t t-name="custom_healthcare.CardHead">
+        <div class="hc-card__head">
+            <div>
+                <h3 t-esc="title"/>
+                <p t-if="sub" t-esc="sub"/>
+            </div>
+            <button t-if="tableKey" type="button" class="hc-ghost-btn"
+                    t-on-click="() => this.toggleTable(tableKey)"
+                    t-att-title="state.tableView[tableKey] ? 'Show chart' : 'Show data table'">
+                <i t-att-class="state.tableView[tableKey] ? 'fa fa-bar-chart' : 'fa fa-table'"/>
+            </button>
+        </div>
+    </t>
+
+    <t t-name="custom_healthcare.Dashboard">
+        <Layout display="display" className="'o_healthcare_dashboard'">
+            <div class="hc-dash" t-att-class="{ 'is-reloading': state.loading and state.data }">
+
+                <!-- ============ HEADER + FILTERS ============ -->
+                <header class="hc-hero">
+                    <div class="hc-hero__copy">
+                        <p class="hc-eyebrow"><i class="fa fa-heartbeat me-1"/> Care Operations Platform</p>
+                        <h1 t-esc="state.data ? state.data.title : 'Healthcare Analytics'"/>
+                        <p class="hc-hero__sub" t-if="state.data" t-esc="state.data.subtitle"/>
+                    </div>
+                    <div class="hc-filters" t-if="state.data">
+                        <div class="hc-segmented" role="group" aria-label="Period">
+                            <t t-foreach="periods" t-as="p" t-key="p.value">
+                                <button type="button" t-att-class="{ 'is-active': state.periodDays === p.value }"
+                                        t-on-click="() => this.setPeriod(p.value)" t-esc="p.label"/>
+                            </t>
+                        </div>
+                        <select class="hc-select" t-on-change="onPracticeChange" aria-label="Practice">
+                            <option value="" t-att-selected="!state.practiceId">All practices</option>
+                            <t t-foreach="state.data.filters.practices" t-as="pr" t-key="pr.id">
+                                <option t-att-value="pr.id" t-att-selected="state.practiceId === pr.id" t-esc="pr.name"/>
+                            </t>
+                        </select>
+                        <button type="button" class="hc-icon-btn" t-on-click="onRefresh"
+                                t-att-disabled="state.loading" title="Refresh">
+                            <i t-att-class="state.loading ? 'fa fa-refresh fa-spin' : 'fa fa-refresh'"/>
+                        </button>
+                    </div>
+                </header>
+
+                <t t-if="!state.data">
+                    <div class="hc-skeleton">
+                        <t t-foreach="[1,2,3,4,5,6]" t-as="i" t-key="i"><div class="hc-skeleton__tile"/></t>
+                    </div>
+                </t>
+                <t t-else="">
+                    <t t-set="d" t-value="state.data"/>
+
+                    <!-- ============ HEADLINE KPIs ============ -->
+                    <section class="hc-kpis">
+                        <t t-foreach="d.kpis" t-as="kpi" t-key="kpi.key">
+                            <t t-set="dl" t-value="deltaInfo(kpi)"/>
+                            <button type="button" class="hc-kpi" t-att-class="{ ['is-' + kpi.tone]: kpi.tone, 'is-static': !kpi.action }"
+                                    t-on-click="() => this.openAction(kpi.action)">
+                                <div class="hc-kpi__top">
+                                    <span class="hc-kpi__label" t-esc="kpi.label"/>
+                                    <span class="hc-kpi__icon"><i t-att-class="'fa ' + kpi.icon"/></span>
+                                </div>
+                                <div class="hc-kpi__value" t-esc="fmt(kpi.value, kpi.format)"/>
+                                <div class="hc-kpi__foot">
+                                    <span t-if="dl" class="hc-delta" t-att-class="dl.cls">
+                                        <i t-att-class="'fa ' + dl.icon"/> <t t-esc="dl.text"/>
+                                    </span>
+                                    <span class="hc-kpi__sub" t-esc="kpi.sub"/>
+                                </div>
+                            </button>
+                        </t>
+                    </section>
+
+                    <!-- ============ INSIGHTS + ACTION QUEUES ============ -->
+                    <div class="hc-grid hc-grid--7-5">
+                        <section class="hc-card">
+                            <t t-call="custom_healthcare.CardHead">
+                                <t t-set="title" t-value="'Key insights'"/>
+                                <t t-set="sub" t-value="'Generated from the selected period and practice scope.'"/>
+                            </t>
+                            <ul class="hc-insights">
+                                <t t-foreach="d.insights" t-as="ins" t-key="ins_index">
+                                    <li t-att-class="'is-' + ins.tone">
+                                        <span class="hc-insights__icon"><i t-att-class="'fa ' + ins.icon"/></span>
+                                        <span t-esc="ins.text"/>
+                                    </li>
+                                </t>
+                                <li t-if="!d.insights.length" class="is-good">
+                                    <span class="hc-insights__icon"><i class="fa fa-check"/></span>
+                                    <span>Not enough activity in this period to derive insights.</span>
+                                </li>
+                            </ul>
+                        </section>
+                        <section class="hc-card">
+                            <t t-call="custom_healthcare.CardHead">
+                                <t t-set="title" t-value="'Action queues'"/>
+                                <t t-set="sub" t-value="'Work waiting on the team right now.'"/>
+                            </t>
+                            <div class="hc-queues">
+                                <t t-foreach="d.queues" t-as="q" t-key="q_index">
+                                    <button type="button" class="hc-queue" t-att-class="{ ['is-' + q.tone]: true, 'is-static': !q.action }"
+                                            t-on-click="() => this.openAction(q.action)">
+                                        <span class="hc-queue__icon"><i t-att-class="'fa ' + q.icon"/></span>
+                                        <span class="hc-queue__label" t-esc="q.label"/>
+                                        <span class="hc-queue__value" t-esc="fmt(q.value)"/>
+                                        <i class="fa fa-angle-right hc-queue__go"/>
+                                    </button>
+                                </t>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- ============ CLINIC ACTIVITY ============ -->
+                    <h2 class="hc-section-title"><i class="fa fa-calendar"/> Clinic activity</h2>
+                    <div class="hc-grid hc-grid--8-4">
+                        <section class="hc-card">
+                            <t t-call="custom_healthcare.CardHead">
+                                <t t-set="title" t-value="'Appointment outcomes'"/>
+                                <t t-set="sub" t-value="'Appointments per ' + d.activity.granularity + ', last ' + periodLabel + ', by outcome.'"/>
+                                <t t-set="tableKey" t-value="'activity'"/>
+                            </t>
+                            <t t-if="!state.tableView.activity">
+                                <HealthcareChart config="charts.activity" height="300" ariaLabel="'Appointment outcomes over time'"/>
+                            </t>
+                            <div t-else="" class="hc-table-wrap hc-table-wrap--scroll">
+                                <table class="hc-table">
+                                    <thead><tr><th>Period</th><t t-foreach="d.activity.series" t-as="s" t-key="s.key"><th class="num" t-esc="s.label"/></t></tr></thead>
+                                    <tbody>
+                                        <t t-foreach="d.activity.labels" t-as="lbl" t-key="lbl_index">
+                                            <tr><td t-esc="lbl"/><t t-foreach="d.activity.series" t-as="s" t-key="s.key"><td class="num" t-esc="s.data[lbl_index]"/></t></tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <section class="hc-card">
+                            <t t-call="custom_healthcare.CardHead">
+                                <t t-set="title" t-value="'Visit mix'"/>
+                                <t t-set="sub" t-value="'Appointments by visit type.'"/>
+                            </t>
+                            <HealthcareChart config="charts.visitMix" height="300" ariaLabel="'Visit mix by appointment type'"/>
+                        </section>
+                    </div>
+
+                    <!-- ============ POPULATION HEALTH ============ -->
+                    <h2 class="hc-section-title"><i class="fa fa-users"/> Population health</h2>
+                    <div class="hc-grid hc-grid--4-4-4">
+                        <section class="hc-card">
+                            <t t-call="custom_healthcare.CardHead">
+                                <t t-set="title" t-value="'Risk stratification'"/>
+                                <t t-set="sub" t-value="d.population.high_risk + ' patients (' + d.population.high_risk_pct + '%) are high or critical risk.'"/>
+                            </t>
+                            <HealthcareChart config="charts.risk" height="240" ariaLabel="'Patients by risk band'"/>
+                        </section>
+                        <section class="hc-card">
+                            <t t-call="custom_healthcare.CardHead">
+                                <t t-set="title" t-value="'Programme compliance'"/>
+                                <t t-set="sub" t-value="d.population.care_gap_pct + '% of ' + d.population.registry_total + ' registry entries have a care gap.'"/>
+                                <t t-set="tableKey" t-value="'disease'"/>
+                            </t>
+                            <t t-if="!state.tableView.disease">
+                                <HealthcareChart config="charts.disease" height="240" ariaLabel="'Registry compliance by disease'"/>
+                            </t>
+                            <div t-else="" class="hc-table-wrap">
+                                <table class="hc-table">
+                                    <thead><tr><th>Programme</th><th class="num">On track</th><th class="num">At risk</th><th class="num">Overdue</th></tr></thead>
+                                    <tbody>
+                                        <t t-foreach="d.population.diseases" t-as="r" t-key="r_index">
+                                            <tr><td t-esc="r.label"/><td class="num" t-esc="r.on_track"/><td class="num" t-esc="r.at_risk"/><td class="num" t-esc="r.overdue"/></tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <section class="hc-card">
+                            <t t-call="custom_healthcare.CardHead">
+                                <t t-set="title" t-value="'Demographics'"/>
+                                <t t-set="sub" t-value="'Registered patients by age band and gender.'"/>
+                            </t>
+                            <HealthcareChart config="charts.demographics" height="240" ariaLabel="'Patients by age band and gender'"/>
+                        </section>
+                    </div>
+
+                    <!-- ============ CLINICAL QUALITY ============ -->
+                    <h2 class="hc-section-title"><i class="fa fa-stethoscope"/> Clinical quality</h2>
+                    <div class="hc-grid hc-grid--6-6">
+                        <section class="hc-card">
+                            <t t-call="custom_healthcare.CardHead">
+                                <t t-set="title" t-value="'Lab results by test'"/>
+                                <t t-set="sub" t-value="d.clinical.abnormal_pct + '% of ' + d.clinical.lab_total + ' results flagged abnormal · ' + d.clinical.tests_period + ' tests this period.'"/>
+                                <t t-set="tableKey" t-value="'labs'"/>
+                            </t>
+                            <t t-if="!state.tableView.labs">
+                                <HealthcareChart config="charts.labs" height="250" ariaLabel="'Lab results by test, normal versus abnormal'"/>
+                            </t>
+                            <div t-else="" class="hc-table-wrap">
+                                <table class="hc-table">
+                                    <thead><tr><th>Test</th><th class="num">Normal</th><th class="num">Abnormal</th><th class="num">Abnormal %</th></tr></thead>
+                                    <tbody>
+                                        <t t-foreach="d.clinical.labs" t-as="r" t-key="r_index">
+                                            <tr><td t-esc="r.label"/><td class="num" t-esc="r.normal"/><td class="num" t-esc="r.abnormal"/><td class="num" t-esc="pct(r.abnormal, r.normal + r.abnormal) + '%'"/></tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <section class="hc-card">
+                            <t t-call="custom_healthcare.CardHead">
+                                <t t-set="title" t-value="'Referral pipeline'"/>
+                                <t t-set="sub" t-value="'Referrals that reached each stage · ' + d.clinical.active_rx + ' active prescriptions.'"/>
+                            </t>
+                            <HealthcareChart config="charts.funnel" height="250" ariaLabel="'Referral pipeline by stage'"/>
+                        </section>
+                    </div>
+
+                    <!-- ============ INPATIENT ============ -->
+                    <h2 class="hc-section-title"><i class="fa fa-bed"/> Inpatient &amp; beds</h2>
+                    <div class="hc-grid hc-grid--5-7">
+                        <section class="hc-card">
+                            <t t-call="custom_healthcare.CardHead">
+                                <t t-set="title" t-value="'Bed status'"/>
+                                <t t-set="sub" t-value="d.inpatient.bed_total + ' beds across ' + d.inpatient.wards.length + ' wards.'"/>
+                            </t>
+                            <t t-if="d.inpatient.bed_total">
+                                <div class="hc-stats">
+                                    <div><span>Occupancy</span><strong t-esc="fmt(d.inpatient.occupancy, 'pct')"/></div>
+                                    <div><span>Inpatients</span><strong t-esc="d.inpatient.current"/></div>
+                                    <div><span>Avg. stay</span><strong><t t-esc="d.inpatient.alos"/> d</strong></div>
+                                    <div><span>Est. charges</span><strong><t t-esc="d.inpatient.currency"/><t t-esc="fmt(round(d.inpatient.charges))"/></strong></div>
+                                </div>
+                                <div class="hc-stackbar" role="img" aria-label="Beds by status">
+                                    <t t-foreach="bedSegments" t-as="seg" t-key="seg.key">
+                                        <span t-att-style="'width:' + seg.width + '%;background:var(' + seg.token + ')'"
+                                              t-att-title="seg.label + ': ' + seg.value"/>
+                                    </t>
+                                </div>
+                                <ul class="hc-legend">
+                                    <t t-foreach="d.inpatient.bed_status" t-as="s" t-key="s.key">
+                                        <li><i t-att-style="'background:' + bedColor(s.key)"/><t t-esc="s.label"/> <b t-esc="s.value"/></li>
+                                    </t>
+                                </ul>
+                                <h4 class="hc-subhead">Ward occupancy</h4>
+                                <div class="hc-rowbars">
+                                    <t t-foreach="d.inpatient.wards" t-as="w" t-key="w.id">
+                                        <div class="hc-rowbar">
+                                            <span class="hc-rowbar__label" t-esc="w.label"/>
+                                            <span class="hc-rowbar__track">
+                                                <span class="hc-rowbar__fill" t-att-class="{ 'is-critical': w.rate >= 85 }" t-att-style="'width:' + w.rate + '%'"/>
+                                            </span>
+                                            <span class="hc-rowbar__value"><t t-esc="w.occupied"/>/<t t-esc="w.total"/> · <t t-esc="round(w.rate)"/>%</span>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                            <div t-else="" class="hc-empty"><i class="fa fa-bed"/> No inpatient beds configured for this scope.</div>
+                        </section>
+                        <section class="hc-card">
+                            <t t-call="custom_healthcare.CardHead">
+                                <t t-set="title" t-value="'Admissions vs discharges'"/>
+                                <t t-set="sub" t-value="'Patient flow per ' + d.activity.granularity + ' · ' + d.inpatient.discharged + ' discharged this period.'"/>
+                            </t>
+                            <HealthcareChart config="charts.admissions" height="330" ariaLabel="'Admissions and discharges over time'"/>
+                        </section>
+                    </div>
+
+                    <!-- ============ CARE COORDINATION ============ -->
+                    <h2 class="hc-section-title"><i class="fa fa-user-md"/> Care coordination</h2>
+                    <div class="hc-grid hc-grid--7-5">
+                        <section class="hc-card">
+                            <t t-call="custom_healthcare.CardHead">
+                                <t t-set="title" t-value="'Coordinator workload'"/>
+                                <t t-set="sub" t-value="d.coordination.done_period + ' follow-ups completed this period · ' + d.coordination.overdue + ' overdue.'"/>
+                            </t>
+                            <div class="hc-table-wrap">
+                                <table class="hc-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Coordinator</th>
+                                            <th class="num">Caseload</th>
+                                            <th class="num">High risk</th>
+                                            <th class="num">Open tasks</th>
+                                            <th>Overdue share</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="d.coordination.coordinators" t-as="c" t-key="c.id">
+                                            <tr>
+                                                <td class="hc-table__name" t-esc="c.label"/>
+                                                <td class="num" t-esc="c.caseload"/>
+                                                <td class="num" t-esc="c.high_risk"/>
+                                                <td class="num" t-esc="c.open"/>
+                                                <td>
+                                                    <div class="hc-inline-bar">
+                                                        <span class="hc-inline-bar__track">
+                                                            <span t-att-class="c.overdue_rate > 50 ? 'is-critical' : 'is-warning'" t-att-style="'width:' + c.overdue_rate + '%'"/>
+                                                        </span>
+                                                        <span class="hc-inline-bar__value"><t t-esc="c.overdue"/> · <t t-esc="round(c.overdue_rate)"/>%</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <section class="hc-card">
+                            <t t-call="custom_healthcare.CardHead">
+                                <t t-set="title" t-value="'Open CDS alerts by type'"/>
+                                <t t-set="sub" t-value="'Clinical decision support queue.'"/>
+                            </t>
+                            <div class="hc-rowbars hc-rowbars--roomy">
+                                <t t-foreach="d.coordination.alerts" t-as="a" t-key="a.key">
+                                    <div class="hc-rowbar">
+                                        <span class="hc-rowbar__label" t-esc="a.label"/>
+                                        <span class="hc-rowbar__track">
+                                            <span class="hc-rowbar__fill" t-att-style="'width:' + (100 * a.value / alertMax) + '%'"/>
+                                        </span>
+                                        <span class="hc-rowbar__value" t-esc="a.value"/>
+                                    </div>
+                                </t>
+                                <div t-if="!d.coordination.alerts.length" class="hc-empty"><i class="fa fa-check"/> No open alerts.</div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- ============ PRACTICE BENCHMARK ============ -->
+                    <h2 class="hc-section-title"><i class="fa fa-hospital-o"/> Practice benchmark</h2>
+                    <section class="hc-card">
+                        <t t-call="custom_healthcare.CardHead">
+                            <t t-set="title" t-value="'Practice performance'"/>
+                            <t t-set="sub" t-value="'Appointment metrics for the last ' + periodLabel + '; risk, follow-ups and beds as of today.'"/>
+                        </t>
+                        <div class="hc-table-wrap">
+                            <table class="hc-table hc-table--bench">
+                                <thead>
+                                    <tr>
+                                        <th>Practice</th>
+                                        <th class="num">Patients</th>
+                                        <th class="num">Appointments</th>
+                                        <th>Attendance</th>
+                                        <th class="num">No-show</th>
+                                        <th class="num">High risk</th>
+                                        <th class="num">Overdue follow-ups</th>
+                                        <th class="num">Bed occupancy</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="d.practices" t-as="p" t-key="p.id">
+                                        <tr>
+                                            <td class="hc-table__name"><t t-esc="p.label"/> <small t-if="p.code" t-esc="p.code"/></td>
+                                            <td class="num" t-esc="fmt(p.patients)"/>
+                                            <td class="num" t-esc="fmt(p.appointments)"/>
+                                            <td>
+                                                <div class="hc-inline-bar">
+                                                    <span class="hc-inline-bar__track"><span class="is-good" t-att-style="'width:' + p.attendance + '%'"/></span>
+                                                    <span class="hc-inline-bar__value" t-esc="fmt(p.attendance, 'pct')"/>
+                                                </div>
+                                            </td>
+                                            <td class="num">
+                                                <span t-att-class="p.no_show >= 10 ? 'hc-flag is-critical' : 'hc-flag'"><i t-if="p.no_show >= 10" class="fa fa-exclamation-circle"/> <t t-esc="fmt(p.no_show, 'pct')"/></span>
+                                            </td>
+                                            <td class="num" t-esc="fmt(p.high_risk, 'pct')"/>
+                                            <td class="num" t-esc="fmt(p.overdue)"/>
+                                            <td class="num" t-esc="p.occupancy === null ? '–' : fmt(p.occupancy, 'pct')"/>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </t>
+            </div>
+        </Layout>
+    </t>
+</templates>

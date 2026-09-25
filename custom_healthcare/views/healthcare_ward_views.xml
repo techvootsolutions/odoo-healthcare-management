@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_healthcare_ward_list" model="ir.ui.view">
+        <field name="name">healthcare.ward.list</field>
+        <field name="model">healthcare.ward</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="practice_id"/>
+                <field name="ward_type"/>
+                <field name="floor"/>
+                <field name="room_count"/>
+                <field name="bed_count"/>
+                <field name="available_bed_count"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_healthcare_ward_form" model="ir.ui.view">
+        <field name="name">healthcare.ward.form</field>
+        <field name="model">healthcare.ward</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_rooms" type="object" class="oe_stat_button" icon="fa-th-large">
+                            <field name="room_count" widget="statinfo" string="Rooms"/>
+                        </button>
+                        <button name="action_view_beds" type="object" class="oe_stat_button" icon="fa-bed">
+                            <field name="bed_count" widget="statinfo" string="Beds"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Ward Name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="practice_id"/>
+                            <field name="ward_type"/>
+                        </group>
+                        <group>
+                            <field name="floor"/>
+                            <field name="active"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_healthcare_ward_search" model="ir.ui.view">
+        <field name="name">healthcare.ward.search</field>
+        <field name="model">healthcare.ward</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="practice_id"/>
+                <group>
+                    <filter string="Practice" name="group_practice" context="{'group_by': 'practice_id'}"/>
+                    <filter string="Ward Type" name="group_type" context="{'group_by': 'ward_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_healthcare_ward" model="ir.actions.act_window">
+        <field name="name">Wards</field>
+        <field name="res_model">healthcare.ward</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

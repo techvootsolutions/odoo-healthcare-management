@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_healthcare_demo_seeder_form" model="ir.ui.view">
+        <field name="name">healthcare.demo.seeder.form</field>
+        <field name="model">healthcare.demo.seeder</field>
+        <field name="arch" type="xml">
+            <form string="Seed Demo Data">
+                <group>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="patient_count"/>
+                    <field name="appointment_per_patient"/>
+                    <field name="create_users"/>
+                    <field name="seed_current_month"/>
+                    <field name="create_care_plans"/>
+                    <field name="create_registry"/>
+                </group>
+                <footer>
+                    <button name="action_seed_full_demo" type="object"
+                            string="Load Full Demo (Users + Current Month)"
+                            class="btn-primary"/>
+                    <button name="action_seed" type="object" string="Generate With Options"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_healthcare_demo_seeder" model="ir.actions.act_window">
+        <field name="name">Seed Demo Data</field>
+        <field name="res_model">healthcare.demo.seeder</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

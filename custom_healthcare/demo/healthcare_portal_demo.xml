@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Flag a practice as the default target for public patient self-registration,
+         so /patient/register works out of the box in the demo environment. -->
+    <record id="custom_healthcare.practice_northside" model="healthcare.practice">
+        <field name="is_default_registration" eval="True"/>
+    </record>
+</odoo>

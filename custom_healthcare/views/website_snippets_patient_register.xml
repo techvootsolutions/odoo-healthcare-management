@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Snippet content: a call-to-action block linking to the public patient
+         self-registration form. Draggable onto any website page. -->
+    <template id="s_patient_register_cta" name="Patient Registration">
+        <section class="s_patient_register_cta o_cc o_cc5 pt64 pb64">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-9">
+                        <h2 class="h3-fs">New here? Register as a Patient</h2>
+                        <p class="lead">
+                            Create your patient profile in a couple of minutes and get
+                            access to your own care portal.
+                        </p>
+                    </div>
+                    <div class="col-lg-3">
+                        <p style="text-align: right;">
+                            <a href="/patient/register" class="btn btn-primary btn-lg o_translate_inline">
+                                Register Now
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <!-- Register the block in the website "Add Block" snippet panel, under Content -->
+    <template id="snippets_patient_register" inherit_id="website.snippets" name="Patient Registration Snippet Entry">
+        <xpath expr="//t[@t-snippet='website.s_call_to_action']" position="after">
+            <t t-snippet="custom_healthcare.s_patient_register_cta" string="Patient Registration" group="content">
+                <keywords>patient, register, registration, signup, portal, appointment, cta, button, healthcare</keywords>
+            </t>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="healthcare_practice_company_rule" model="ir.rule">
+        <field name="name">Healthcare Practice multi-company</field>
+        <field name="model_id" ref="model_healthcare_practice"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_patient_company_rule" model="ir.rule">
+        <field name="name">Healthcare Patient multi-company</field>
+        <field name="model_id" ref="model_healthcare_patient"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_appointment_company_rule" model="ir.rule">
+        <field name="name">Healthcare Appointment multi-company</field>
+        <field name="model_id" ref="model_healthcare_appointment"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_consultation_company_rule" model="ir.rule">
+        <field name="name">Healthcare Consultation multi-company</field>
+        <field name="model_id" ref="model_healthcare_consultation"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_care_plan_company_rule" model="ir.rule">
+        <field name="name">Healthcare Care Plan multi-company</field>
+        <field name="model_id" ref="model_healthcare_care_plan"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_care_plan_line_company_rule" model="ir.rule">
+        <field name="name">Healthcare Care Plan Line multi-company</field>
+        <field name="model_id" ref="model_healthcare_care_plan_line"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_referral_company_rule" model="ir.rule">
+        <field name="name">Healthcare Referral multi-company</field>
+        <field name="model_id" ref="model_healthcare_referral"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_disease_registry_company_rule" model="ir.rule">
+        <field name="name">Healthcare Disease Registry multi-company</field>
+        <field name="model_id" ref="model_healthcare_disease_registry"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_lab_request_company_rule" model="ir.rule">
+        <field name="name">Healthcare Lab Request multi-company</field>
+        <field name="model_id" ref="model_healthcare_lab_request"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_lab_request_line_company_rule" model="ir.rule">
+        <field name="name">Healthcare Lab Request Line multi-company</field>
+        <field name="model_id" ref="model_healthcare_lab_request_line"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_prescription_company_rule" model="ir.rule">
+        <field name="name">Healthcare Prescription multi-company</field>
+        <field name="model_id" ref="model_healthcare_prescription"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_prescription_line_company_rule" model="ir.rule">
+        <field name="name">Healthcare Prescription Line multi-company</field>
+        <field name="model_id" ref="model_healthcare_prescription_line"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_allied_session_company_rule" model="ir.rule">
+        <field name="name">Healthcare Allied Session multi-company</field>
+        <field name="model_id" ref="model_healthcare_allied_session"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_alert_company_rule" model="ir.rule">
+        <field name="name">Healthcare Alert multi-company</field>
+        <field name="model_id" ref="model_healthcare_alert"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_population_report_company_rule" model="ir.rule">
+        <field name="name">Healthcare Population Report multi-company</field>
+        <field name="model_id" ref="model_healthcare_population_report"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

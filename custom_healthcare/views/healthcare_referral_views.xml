@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_healthcare_referral_list" model="ir.ui.view">
+        <field name="name">healthcare.referral.list</field>
+        <field name="model">healthcare.referral</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="specialty"/>
+                <field name="priority"/>
+                <field name="state"/>
+                <field name="from_practitioner_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_healthcare_referral_form" model="ir.ui.view">
+        <field name="name">healthcare.referral.form</field>
+        <field name="model">healthcare.referral</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_send" type="object" string="Send" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_accept" type="object" string="Accept"
+                            invisible="state != 'sent'"/>
+                    <button name="action_close" type="object" string="Close"
+                            invisible="state in ('closed', 'cancelled', 'draft')"/>
+                    <button name="action_create_allied_session" type="object" string="Allied Session"
+                            invisible="state in ('draft', 'cancelled')"/>
+                    <field name="state" widget="statusbar"
+                            statusbar_visible="draft,sent,accepted,appointment,feedback,closed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="patient_id"/>
+                            <field name="practice_id"/>
+                            <field name="consultation_id"/>
+                            <field name="from_practitioner_id"/>
+                        </group>
+                        <group>
+                            <field name="specialty"/>
+                            <field name="receiving_specialist"/>
+                            <field name="priority"/>
+                            <field name="appointment_date"/>
+                            <field name="closure_date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <separator string="Reason"/>
+                    <field name="reason"/>
+                    <separator string="Clinical Feedback"/>
+                    <field name="clinical_feedback"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_healthcare_referral_graph" model="ir.ui.view">
+        <field name="name">healthcare.referral.graph</field>
+        <field name="model">healthcare.referral</field>
+        <field name="arch" type="xml">
+            <graph string="Referrals by Specialty" type="pie">
+                <field name="specialty"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_healthcare_referral" model="ir.actions.act_window">
+        <field name="name">Referrals</field>
+        <field name="res_model">healthcare.referral</field>
+        <field name="view_mode">list,form,graph</field>
+    </record>
+</odoo>

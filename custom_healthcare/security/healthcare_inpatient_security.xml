@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="healthcare_ward_company_rule" model="ir.rule">
+        <field name="name">Healthcare Ward multi-company</field>
+        <field name="model_id" ref="model_healthcare_ward"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_room_company_rule" model="ir.rule">
+        <field name="name">Healthcare Room multi-company</field>
+        <field name="model_id" ref="model_healthcare_room"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_bed_company_rule" model="ir.rule">
+        <field name="name">Healthcare Bed multi-company</field>
+        <field name="model_id" ref="model_healthcare_bed"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_admission_company_rule" model="ir.rule">
+        <field name="name">Healthcare Admission multi-company</field>
+        <field name="model_id" ref="model_healthcare_admission"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="healthcare_bed_transfer_company_rule" model="ir.rule">
+        <field name="name">Healthcare Bed Transfer multi-company</field>
+        <field name="model_id" ref="model_healthcare_bed_transfer"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

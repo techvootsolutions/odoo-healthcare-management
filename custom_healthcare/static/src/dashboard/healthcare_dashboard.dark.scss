@@ -1,0 +1,46 @@
+// Dark-mode tokens for the healthcare dashboard (loaded only in web.assets_web_dark).
+// Each value is a selected dark step, not an automatic inversion.
+.o_content.o_healthcare_dashboard {
+    background: #16191c;
+}
+
+.hc-dash {
+    --hc-page: #16191c;
+    --hc-surface: #1f2226;
+    --hc-surface-2: #272b30;
+    --hc-border: rgba(255, 255, 255, 0.08);
+    --hc-ink: #f2f4f3;
+    --hc-ink-2: #c3c9c7;
+    --hc-muted: #8d9794;
+    --hc-grid: #2e3338;
+    --hc-axis: #3d4349;
+    --hc-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --hc-shadow-hover: 0 6px 18px rgba(0, 0, 0, 0.45);
+    --hc-tooltip-bg: #f2f4f3;
+    --hc-tooltip-ink: #0f1f1c;
+
+    --hc-brand: #2fa39a;
+    --hc-brand-deep: #0b3f3b;
+    --hc-brand-wash: rgba(47, 163, 154, 0.16);
+
+    --hc-series-1: #3987e5;
+    --hc-series-2: #d95926;
+    --hc-series-3: #199e70;
+    --hc-series-4: #9085e9;
+
+    --hc-good-ink: #0ca30c;
+    --hc-critical-ink: #e66767;
+    --hc-neutral: #6b6a64;
+    --hc-info: #3987e5;
+}
+
+.hc-hero {
+    background:
+        radial-gradient(120% 140% at 100% 0%, rgba(47, 163, 168, 0.22), transparent 55%),
+        linear-gradient(135deg, #0b3f3b, #0f5a53);
+}
+
+.hc-segmented button.is-active,
+.hc-select {
+    background-color: #f2f4f3;
+}

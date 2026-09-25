@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_healthcare_medicine_list" model="ir.ui.view">
+        <field name="name">healthcare.medicine.list</field>
+        <field name="model">healthcare.medicine</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="active_ingredient"/>
+                <field name="strength"/>
+                <field name="form"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_healthcare_medicine_form" model="ir.ui.view">
+        <field name="name">healthcare.medicine.form</field>
+        <field name="model">healthcare.medicine</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="active_ingredient"/>
+                        <field name="strength"/>
+                        <field name="form"/>
+                        <field name="allergy_keywords"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_healthcare_prescription_list" model="ir.ui.view">
+        <field name="name">healthcare.prescription.list</field>
+        <field name="model">healthcare.prescription</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="prescription_date"/>
+                <field name="patient_id"/>
+                <field name="prescribed_by_id"/>
+                <field name="is_repeat"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_healthcare_prescription_form" model="ir.ui.view">
+        <field name="name">healthcare.prescription.form</field>
+        <field name="model">healthcare.prescription</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_activate" type="object" string="Activate"
+                            class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_activate_override" type="object"
+                            string="Activate (Override Allergy)"
+                            invisible="state != 'draft' or not allergy_warning"
+                            confirm="Activate despite allergy warning?"/>
+                    <button name="action_complete" type="object" string="Complete"
+                            invisible="state != 'active'"/>
+                    <field name="state" widget="statusbar"
+                            statusbar_visible="draft,active,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_id"/>
+                            <field name="practice_id"/>
+                            <field name="consultation_id"/>
+                            <field name="prescribed_by_id"/>
+                        </group>
+                        <group>
+                            <field name="prescription_date"/>
+                            <field name="is_repeat"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-danger" role="alert" invisible="not allergy_warning">
+                        <field name="allergy_warning"/>
+                    </div>
+                    <notebook>
+                        <page string="Medicines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="medicine_id"/>
+                                    <field name="strength"/>
+                                    <field name="dosage"/>
+                                    <field name="frequency"/>
+                                    <field name="duration"/>
+                                    <field name="instructions"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_healthcare_medicine" model="ir.actions.act_window">
+        <field name="name">Medicines</field>
+        <field name="res_model">healthcare.medicine</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_healthcare_prescription" model="ir.actions.act_window">
+        <field name="name">Prescriptions</field>
+        <field name="res_model">healthcare.prescription</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

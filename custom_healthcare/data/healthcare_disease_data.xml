@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="disease_diabetes" model="healthcare.disease.type">
+        <field name="name">Type 2 Diabetes</field>
+        <field name="code">DM2</field>
+        <field name="category">diabetes</field>
+    </record>
+    <record id="disease_hypertension" model="healthcare.disease.type">
+        <field name="name">Hypertension</field>
+        <field name="code">HTN</field>
+        <field name="category">hypertension</field>
+    </record>
+    <record id="disease_copd" model="healthcare.disease.type">
+        <field name="name">COPD</field>
+        <field name="code">COPD</field>
+        <field name="category">copd</field>
+    </record>
+    <record id="disease_asthma" model="healthcare.disease.type">
+        <field name="name">Asthma</field>
+        <field name="code">AST</field>
+        <field name="category">asthma</field>
+    </record>
+    <record id="disease_mental_health" model="healthcare.disease.type">
+        <field name="name">Depression / Anxiety</field>
+        <field name="code">MH</field>
+        <field name="category">mental_health</field>
+    </record>
+    <record id="disease_cancer" model="healthcare.disease.type">
+        <field name="name">Cancer Survivorship</field>
+        <field name="code">CA</field>
+        <field name="category">cancer</field>
+    </record>
+</odoo>

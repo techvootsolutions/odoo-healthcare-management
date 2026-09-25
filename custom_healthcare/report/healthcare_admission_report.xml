@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_healthcare_discharge_summary" model="ir.actions.report">
+        <field name="name">Discharge Summary</field>
+        <field name="model">healthcare.admission</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_healthcare_inpatient.report_discharge_summary</field>
+        <field name="report_file">custom_healthcare_inpatient.report_discharge_summary</field>
+        <field name="binding_model_id" ref="model_healthcare_admission"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_discharge_summary">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Discharge Summary</h2>
+                        <table class="table table-sm" style="margin-bottom: 24px;">
+                            <tr>
+                                <td><strong>Admission No.</strong></td>
+                                <td><span t-field="doc.name"/></td>
+                                <td><strong>Patient</strong></td>
+                                <td><span t-field="doc.patient_id"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Practice</strong></td>
+                                <td><span t-field="doc.practice_id"/></td>
+                                <td><strong>Bed</strong></td>
+                                <td><span t-field="doc.bed_id"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Admission Date</strong></td>
+                                <td><span t-field="doc.admission_date"/></td>
+                                <td><strong>Discharge Date</strong></td>
+                                <td><span t-field="doc.actual_discharge_date"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Length of Stay</strong></td>
+                                <td><span t-field="doc.length_of_stay"/> day(s)</td>
+                                <td><strong>Condition</strong></td>
+                                <td><span t-field="doc.discharge_condition"/></td>
+                            </tr>
+                        </table>
+
+                        <h4>Diagnosis</h4>
+                        <p><span t-field="doc.diagnosis"/></p>
+
+                        <h4>Discharge Summary</h4>
+                        <p><span t-field="doc.discharge_summary"/></p>
+
+                        <div style="margin-top: 48px;">
+                            <p>Signed:</p>
+                            <p><span t-field="doc.admitting_physician_id"/></p>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

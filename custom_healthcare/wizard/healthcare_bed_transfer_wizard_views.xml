@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_healthcare_bed_transfer_wizard_form" model="ir.ui.view">
+        <field name="name">healthcare.bed.transfer.wizard.form</field>
+        <field name="model">healthcare.bed.transfer.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Transfer Bed">
+                <group>
+                    <field name="admission_id" invisible="1"/>
+                    <field name="practice_id" invisible="1"/>
+                    <field name="current_bed_id"/>
+                    <field name="new_bed_id"/>
+                    <field name="reason"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Transfer" class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

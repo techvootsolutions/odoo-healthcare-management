@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_healthcare_dashboard_form" model="ir.ui.view">
+        <field name="name">healthcare.dashboard.form</field>
+        <field name="model">healthcare.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Healthcare Dashboards" create="0" delete="0" edit="0">
+                <sheet>
+                    <field name="name" invisible="1"/>
+                    <div class="oe_title">
+                        <h1>Ops / Clinical Dashboards</h1>
+                    </div>
+                    <group>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+
+                    <separator string="Executive Analytics"/>
+                    <div class="oe_button_box" name="button_box_exec">
+                        <button name="action_open_patients" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="patient_count" widget="statinfo" string="Patients"/>
+                        </button>
+                        <button name="action_open_active_practices" type="object" class="oe_stat_button" icon="fa-hospital-o">
+                            <field name="active_practice_count" widget="statinfo" string="Active Practices"/>
+                        </button>
+                        <button name="action_open_care_plans" type="object" class="oe_stat_button" icon="fa-heartbeat">
+                            <field name="active_care_plan_count" widget="statinfo" string="Active Care Plans"/>
+                        </button>
+                        <button name="action_open_high_risk" type="object" class="oe_stat_button" icon="fa-exclamation-triangle">
+                            <field name="high_risk_patient_count" widget="statinfo" string="High Risk"/>
+                        </button>
+                        <button name="action_open_referrals" type="object" class="oe_stat_button" icon="fa-share">
+                            <field name="open_referral_count" widget="statinfo" string="Open Referrals"/>
+                        </button>
+                        <button name="action_open_consultations_month" type="object" class="oe_stat_button" icon="fa-stethoscope">
+                            <field name="consultation_month_count" widget="statinfo" string="Consultations (MTD)"/>
+                        </button>
+                    </div>
+
+                    <separator string="Care Coordinator Cockpit"/>
+                    <div class="oe_button_box" name="button_box_coord">
+                        <button name="action_open_today_followups" type="object" class="oe_stat_button" icon="fa-phone">
+                            <field name="today_followup_count" widget="statinfo" string="Today Follow-ups"/>
+                        </button>
+                        <button name="action_open_overdue_followups" type="object" class="oe_stat_button" icon="fa-clock-o">
+                            <field name="overdue_followup_count" widget="statinfo" string="Overdue"/>
+                        </button>
+                        <button name="action_open_caseload" type="object" class="oe_stat_button" icon="fa-user-md">
+                            <field name="assigned_caseload_count" widget="statinfo" string="My Caseload"/>
+                        </button>
+                        <button name="action_open_high_risk" type="object" class="oe_stat_button" icon="fa-bolt">
+                            <field name="escalation_count" widget="statinfo" string="Escalations"/>
+                        </button>
+                    </div>
+
+                    <separator string="Disease / Programme KPIs"/>
+                    <div class="oe_button_box" name="button_box_disease">
+                        <button name="action_open_registry" type="object" class="oe_stat_button" icon="fa-database">
+                            <field name="registry_count" widget="statinfo" string="Registry Entries"/>
+                        </button>
+                        <button name="action_open_registry_gaps" type="object" class="oe_stat_button" icon="fa-warning">
+                            <field name="care_gap_count" widget="statinfo" string="Care Gaps"/>
+                        </button>
+                        <button name="action_open_overdue_reviews" type="object" class="oe_stat_button" icon="fa-calendar-times-o">
+                            <field name="overdue_review_count" widget="statinfo" string="Overdue Reviews"/>
+                        </button>
+                    </div>
+
+                    <separator string="Clinical (Lab / Meds / Allied)"/>
+                    <div class="oe_button_box" name="button_box_clinical_v2">
+                        <button name="action_open_labs" type="object" class="oe_stat_button" icon="fa-flask">
+                            <field name="open_lab_count" widget="statinfo" string="Open Labs"/>
+                        </button>
+                        <button name="action_open_abnormal_labs" type="object" class="oe_stat_button" icon="fa-exclamation-circle">
+                            <field name="abnormal_lab_count" widget="statinfo" string="Abnormal Pending"/>
+                        </button>
+                        <button name="action_open_prescriptions" type="object" class="oe_stat_button" icon="fa-medkit">
+                            <field name="active_prescription_count" widget="statinfo" string="Active Rx"/>
+                        </button>
+                        <button name="action_open_allied_month" type="object" class="oe_stat_button" icon="fa-handshake-o">
+                            <field name="allied_session_month_count" widget="statinfo" string="Allied (MTD)"/>
+                        </button>
+                        <button name="action_open_alerts" type="object" class="oe_stat_button" icon="fa-bell">
+                            <field name="open_alert_count" widget="statinfo" string="Open Alerts"/>
+                        </button>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <delete model="ir.actions.server" id="action_healthcare_dashboard"/>
+
+    <record id="action_healthcare_dashboard" model="ir.actions.client">
+        <field name="name">Dashboards</field>
+        <field name="tag">healthcare_dashboard</field>
+        <field name="target">current</field>
+    </record>
+</odoo>

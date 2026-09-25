@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_healthcare_root"
+              name="Healthcare"
+              web_icon="custom_healthcare,static/description/icon.png"
+              sequence="25"
+              groups="group_healthcare_user"/>
+
+    <menuitem id="menu_healthcare_dashboard"
+              name="Dashboards"
+              parent="menu_healthcare_root"
+              action="action_healthcare_dashboard"
+              sequence="1"
+              groups="group_healthcare_manager"/>
+
+    <menuitem id="menu_healthcare_clinical"
+              name="Clinical"
+              parent="menu_healthcare_root"
+              sequence="10"/>
+
+    <menuitem id="menu_healthcare_patient"
+              name="Patients"
+              parent="menu_healthcare_clinical"
+              action="action_healthcare_patient"
+              sequence="10"/>
+
+    <menuitem id="menu_healthcare_appointment"
+              name="Appointments"
+              parent="menu_healthcare_clinical"
+              action="action_healthcare_appointment"
+              sequence="20"/>
+
+    <menuitem id="menu_healthcare_appointment_requests"
+              name="Appointment Requests"
+              parent="menu_healthcare_clinical"
+              action="action_healthcare_appointment_requests"
+              sequence="22"/>
+
+    <menuitem id="menu_healthcare_consultation"
+              name="Consultations"
+              parent="menu_healthcare_clinical"
+              action="action_healthcare_consultation"
+              sequence="30"/>
+
+    <menuitem id="menu_healthcare_referral"
+              name="Referrals"
+              parent="menu_healthcare_clinical"
+              action="action_healthcare_referral"
+              sequence="40"/>
+
+    <menuitem id="menu_healthcare_lab"
+              name="Lab Requests"
+              parent="menu_healthcare_clinical"
+              action="action_healthcare_lab_request"
+              sequence="50"/>
+
+    <menuitem id="menu_healthcare_lab_abnormal"
+              name="Abnormal Labs"
+              parent="menu_healthcare_clinical"
+              action="action_healthcare_lab_abnormal"
+              sequence="55"/>
+
+    <menuitem id="menu_healthcare_prescription"
+              name="Prescriptions"
+              parent="menu_healthcare_clinical"
+              action="action_healthcare_prescription"
+              sequence="60"/>
+
+    <menuitem id="menu_healthcare_allied"
+              name="Allied Sessions"
+              parent="menu_healthcare_clinical"
+              action="action_healthcare_allied_session"
+              sequence="70"/>
+
+    <menuitem id="menu_healthcare_coordination"
+              name="Care Coordination"
+              parent="menu_healthcare_root"
+              sequence="20"/>
+
+    <menuitem id="menu_healthcare_care_plan"
+              name="Care Plans"
+              parent="menu_healthcare_coordination"
+              action="action_healthcare_care_plan"
+              sequence="10"/>
+
+    <menuitem id="menu_healthcare_followups"
+              name="Follow-up Activities"
+              parent="menu_healthcare_coordination"
+              action="action_healthcare_care_plan_line"
+              sequence="20"/>
+
+    <menuitem id="menu_healthcare_overdue"
+              name="Overdue Follow-ups"
+              parent="menu_healthcare_coordination"
+              action="action_healthcare_overdue_followups"
+              sequence="30"/>
+
+    <menuitem id="menu_healthcare_caseload"
+              name="My Caseload"
+              parent="menu_healthcare_coordination"
+              action="action_healthcare_coordinator_caseload"
+              sequence="40"
+              groups="group_healthcare_coordinator"/>
+
+    <menuitem id="menu_healthcare_high_risk"
+              name="High Risk Patients"
+              parent="menu_healthcare_coordination"
+              action="action_healthcare_patient_high_risk"
+              sequence="50"/>
+
+    <menuitem id="menu_healthcare_population"
+              name="Population Health"
+              parent="menu_healthcare_root"
+              sequence="30"/>
+
+    <menuitem id="menu_healthcare_registry"
+              name="Disease Registry"
+              parent="menu_healthcare_population"
+              action="action_healthcare_disease_registry"
+              sequence="10"/>
+
+    <menuitem id="menu_healthcare_care_gaps"
+              name="Care Gaps"
+              parent="menu_healthcare_population"
+              action="action_healthcare_care_gaps"
+              sequence="20"/>
+
+    <menuitem id="menu_healthcare_population_report"
+              name="Population Analytics"
+              parent="menu_healthcare_population"
+              action="action_healthcare_population_report"
+              sequence="30"
+              groups="group_healthcare_manager"/>
+
+    <menuitem id="menu_healthcare_alerts"
+              name="CDS Alerts"
+              parent="menu_healthcare_coordination"
+              action="action_healthcare_alert"
+              sequence="5"/>
+
+    <menuitem id="menu_healthcare_inpatient"
+              name="Inpatient"
+              parent="menu_healthcare_root"
+              sequence="15"/>
+
+    <menuitem id="menu_healthcare_bed_board"
+              name="Bed Board"
+              parent="menu_healthcare_inpatient"
+              action="action_healthcare_bed"
+              sequence="5"/>
+
+    <menuitem id="menu_healthcare_admission"
+              name="Admissions"
+              parent="menu_healthcare_inpatient"
+              action="action_healthcare_admission"
+              sequence="10"/>
+
+    <menuitem id="menu_healthcare_ward"
+              name="Wards"
+              parent="menu_healthcare_inpatient"
+              action="action_healthcare_ward"
+              sequence="20"/>
+
+    <menuitem id="menu_healthcare_room"
+              name="Rooms"
+              parent="menu_healthcare_inpatient"
+              action="action_healthcare_room"
+              sequence="30"/>
+
+    <menuitem id="menu_healthcare_network"
+              name="Network"
+              parent="menu_healthcare_root"
+              sequence="40"/>
+
+    <menuitem id="menu_healthcare_practice"
+              name="Practices"
+              parent="menu_healthcare_network"
+              action="action_healthcare_practice"
+              sequence="10"/>
+
+    <menuitem id="menu_healthcare_config"
+              name="Configuration"
+              parent="menu_healthcare_root"
+              sequence="90"
+              groups="group_healthcare_manager"/>
+
+    <menuitem id="menu_healthcare_disease_type"
+              name="Disease Types"
+              parent="menu_healthcare_config"
+              action="action_healthcare_disease_type"
+              sequence="10"/>
+
+    <menuitem id="menu_healthcare_lab_test_type"
+              name="Lab Test Types"
+              parent="menu_healthcare_config"
+              action="action_healthcare_lab_test_type"
+              sequence="20"/>
+
+    <menuitem id="menu_healthcare_medicine"
+              name="Medicines"
+              parent="menu_healthcare_config"
+              action="action_healthcare_medicine"
+              sequence="30"/>
+
+    <menuitem id="menu_healthcare_demo_seeder"
+              name="Seed Demo Data"
+              parent="menu_healthcare_config"
+              action="action_healthcare_demo_seeder"
+              sequence="90"
+              groups="-group_healthcare_admin,base.group_no_one"/>
+</odoo>

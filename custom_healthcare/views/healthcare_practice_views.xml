@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Practice List View -->
+    <record id="view_healthcare_practice_list" model="ir.ui.view">
+        <field name="name">healthcare.practice.list</field>
+        <field name="model">healthcare.practice</field>
+        <field name="arch" type="xml">
+            <list string="Practices">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="state"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="gp_owner_id"/>
+                <field name="phone"/>
+                <field name="patient_count"/>
+                <field name="active" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Practice Form View -->
+    <record id="view_healthcare_practice_form" model="ir.ui.view">
+        <field name="name">healthcare.practice.form</field>
+        <field name="model">healthcare.practice</field>
+        <field name="arch" type="xml">
+            <form string="Practice">
+                <header>
+                    <button name="action_set_active" type="object" string="Set Active"
+                            class="oe_highlight" invisible="state not in ['prospect', 'onboarding', 'suspended']"/>
+                    <field name="state" widget="statusbar"
+                            statusbar_visible="prospect,onboarding,active,suspended"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_patients" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="patient_count" widget="statinfo" string="Patients"/>
+                        </button>
+                        <button name="action_view_appointments" type="object" class="oe_stat_button" icon="fa-calendar">
+                            <field name="appointment_count" widget="statinfo" string="Appointments"/>
+                        </button>
+                        <button name="action_view_care_plan" type="object" class="oe_stat_button" icon="fa-heartbeat">
+                            <field name="care_plan_count" widget="statinfo" string="Care Plans"/>
+                        </button>
+                        <button name="action_view_beds" type="object" class="oe_stat_button" icon="fa-hospital-o">
+                            <field name="bed_count" widget="statinfo" string="Beds"/>
+                        </button>
+                    </div>
+
+                    <!-- Title Section -->
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Practice Name"/>
+                        </h1>
+                    </div>
+
+                    <!-- Main Content in Tabs -->
+                    <notebook>
+                        <!-- General Information Tab -->
+                        <page string="General Information" name="general">
+                            <group>
+                                <group string="Practice Details">
+                                    <field name="code"/>
+                                    <field name="state"/>
+                                    <field name="company_id" groups="base.group_multi_company"/>
+                                    <field name="active"/>
+                                    <field name="go_live_date"/>
+                                </group>
+
+                                <group string="CRM Integration">
+                                    <field name="opportunity_id"/>
+                                    <field name="programme_participation"/>
+                                </group>
+                            </group>
+
+                            <separator string="Medical Scheme Information"/>
+                            <group>
+                                <field name="medical_scheme_notes" nolabel="1"/>
+                            </group>
+                        </page>
+
+                        <!-- Contact Information Tab -->
+                        <page string="Contact Information" name="contact">
+                            <group>
+                                <group string="Contact Details">
+                                    <field name="partner_id"/>
+                                    <field name="phone"/>
+                                    <field name="email"/>
+                                </group>
+
+                                <group string="Address">
+                                    <field name="street"/>
+                                    <field name="city"/>
+                                    <field name="state_id"/>
+                                    <field name="country_id"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Staff Management Tab -->
+                        <page string="Staff Management" name="staff">
+                            <group string="Primary Staff">
+                                <field name="gp_owner_id"/>
+                            </group>
+
+                            <separator string="Healthcare Team"/>
+                            <group>
+                                <group string="Doctors">
+                                    <field name="doctor_ids" widget="many2many_tags"/>
+                                </group>
+
+                                <group string="Nurses">
+                                    <field name="nurse_ids" widget="many2many_tags"/>
+                                </group>
+
+                                <group string="Care Coordinators">
+                                    <field name="coordinator_ids" widget="many2many_tags"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Inpatient Management Tab -->
+                        <page string="Inpatient Management" name="inpatient">
+                            <group string="Bed Management Summary">
+                                <group>
+                                    <field name="bed_count"/>
+                                    <field name="available_bed_count"/>
+                                    <field name="occupied_bed_count"/>
+                                </group>
+                            </group>
+
+                            <separator string="Wards"/>
+                            <field name="ward_ids" nolabel="1">
+                                <list string="Wards" editable="bottom">
+                                    <field name="name" string="Ward Name"/>
+                                    <field name="code" string="Code"/>
+                                    <field name="active" string="Active"/>
+                                </list>
+                            </field>
+
+                            <separator string="Beds"/>
+                            <field name="bed_ids" nolabel="1">
+                                <list string="Beds" editable="bottom">
+                                    <field name="name" string="Bed Name"/>
+                                    <field name="bed_type" string="Type"/>
+                                    <field name="status" string="Status"/>
+                                    <field name="daily_rate" string="Daily Rate"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <!-- Notes Tab -->
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Enter any additional notes about the practice..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Practice Search/Filter View -->
+    <record id="view_healthcare_practice_search" model="ir.ui.view">
+        <field name="name">healthcare.practice.search</field>
+        <field name="model">healthcare.practice</field>
+        <field name="arch" type="xml">
+            <search string="Practice">
+                <field name="name" string="Practice Name"/>
+                <field name="code"/>
+                <field name="gp_owner_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+
+                <separator/>
+                <filter name="active_filter" string="Active" domain="[('active', '=', True)]"/>
+                <filter name="inactive_filter" string="Inactive" domain="[('active', '=', False)]"/>
+
+                <separator/>
+                <filter name="prospect" string="Prospect" domain="[('state', '=', 'prospect')]"/>
+                <filter name="onboarding" string="Onboarding" domain="[('state', '=', 'onboarding')]"/>
+                <filter name="active_status" string="Active" domain="[('state', '=', 'active')]"/>
+                <filter name="suspended" string="Suspended" domain="[('state', '=', 'suspended')]"/>
+
+                <separator/>
+                <group>
+                    <filter name="group_by_state" string="Status" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_company" string="Company" domain="[]" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                    <filter name="group_by_gp" string="GP Owner" domain="[]" context="{'group_by': 'gp_owner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action for Practice -->
+    <record id="action_healthcare_practice" model="ir.actions.act_window">
+        <field name="name">Practices</field>
+        <field name="res_model">healthcare.practice</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_healthcare_practice_search"/>
+        <field name="context">{'search_default_active_filter': 1}</field>
+    </record>
+</odoo>

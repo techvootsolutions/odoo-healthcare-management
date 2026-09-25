@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Practice contacts -->
+    <record id="partner_practice_northside" model="res.partner">
+        <field name="name">Northside Family Practice</field>
+        <field name="is_company" eval="True"/>
+        <field name="street">12 Health Avenue</field>
+        <field name="city">Metro City</field>
+        <field name="phone">+1 555 0101</field>
+        <field name="email">admin@northside.example</field>
+    </record>
+    <record id="partner_practice_riverside" model="res.partner">
+        <field name="name">Riverside Primary Care</field>
+        <field name="is_company" eval="True"/>
+        <field name="street">88 River Road</field>
+        <field name="city">Metro City</field>
+        <field name="phone">+1 555 0202</field>
+        <field name="email">admin@riverside.example</field>
+    </record>
+    <record id="partner_practice_oakwood" model="res.partner">
+        <field name="name">Oakwood GP Network Hub</field>
+        <field name="is_company" eval="True"/>
+        <field name="street">5 Oak Street</field>
+        <field name="city">Greenfield</field>
+        <field name="phone">+1 555 0303</field>
+        <field name="email">admin@oakwood.example</field>
+    </record>
+
+    <!-- CRM opportunity for onboarding story -->
+    <record id="crm_lead_practice_prospect" model="crm.lead">
+        <field name="name">Oakwood GP Network Hub — Onboarding</field>
+        <field name="type">opportunity</field>
+        <field name="partner_id" ref="partner_practice_oakwood"/>
+        <field name="partner_name">Oakwood GP Network Hub</field>
+        <field name="email_from">admin@oakwood.example</field>
+        <field name="phone">+1 555 0303</field>
+        <field name="description">Prospective practice for VBHC programme enrolment.</field>
+    </record>
+
+    <record id="practice_northside" model="healthcare.practice">
+        <field name="name">Northside Family Practice</field>
+        <field name="code">NFP-001</field>
+        <field name="partner_id" ref="partner_practice_northside"/>
+        <field name="gp_owner_id" ref="base.user_admin"/>
+        <field name="doctor_ids" eval="[(4, ref('base.user_admin'))]"/>
+        <field name="coordinator_ids" eval="[(4, ref('base.user_admin'))]"/>
+        <field name="state">active</field>
+        <field name="go_live_date">2023-04-01</field>
+        <field name="programme_participation">Diabetes + Hypertension VBHC</field>
+        <field name="medical_scheme_notes">Participates in major medical schemes.</field>
+    </record>
+
+    <record id="practice_riverside" model="healthcare.practice">
+        <field name="name">Riverside Primary Care</field>
+        <field name="code">RPC-002</field>
+        <field name="partner_id" ref="partner_practice_riverside"/>
+        <field name="gp_owner_id" ref="base.user_admin"/>
+        <field name="doctor_ids" eval="[(4, ref('base.user_admin'))]"/>
+        <field name="coordinator_ids" eval="[(4, ref('base.user_admin'))]"/>
+        <field name="state">active</field>
+        <field name="go_live_date">2022-09-15</field>
+        <field name="programme_participation">COPD + Asthma programme</field>
+    </record>
+
+    <record id="practice_oakwood" model="healthcare.practice">
+        <field name="name">Oakwood GP Network Hub</field>
+        <field name="code">OGN-003</field>
+        <field name="partner_id" ref="partner_practice_oakwood"/>
+        <field name="state">onboarding</field>
+        <field name="opportunity_id" ref="crm_lead_practice_prospect"/>
+        <field name="programme_participation">Pending go-live</field>
+    </record>
+
+    <record id="crm_lead_practice_prospect" model="crm.lead">
+        <field name="healthcare_practice_id" ref="practice_oakwood"/>
+    </record>
+
+    <!-- Hero patient for demo storyline -->
+    <record id="patient_maria_santos" model="healthcare.patient">
+        <field name="name">Maria Santos</field>
+        <field name="date_of_birth">1978-06-14</field>
+        <field name="gender">female</field>
+        <field name="national_id">MS-19780614</field>
+        <field name="phone">+1 555 1001</field>
+        <field name="email">maria.santos@example.com</field>
+        <field name="emergency_contact">Carlos Santos</field>
+        <field name="emergency_phone">+1 555 1002</field>
+        <field name="blood_group">o+</field>
+        <field name="allergies">Penicillin</field>
+        <field name="family_history">Father: Type 2 Diabetes; Mother: Hypertension</field>
+        <field name="smoking_status">never</field>
+        <field name="alcohol_status">occasional</field>
+        <field name="vaccination_status">Influenza 2025; COVID booster 2024</field>
+        <field name="medical_scheme">HealthPlus</field>
+        <field name="membership_number">HP-883421</field>
+        <field name="scheme_plan">Comprehensive</field>
+        <field name="practice_id" ref="practice_northside"/>
+        <field name="primary_gp_id" ref="base.user_admin"/>
+        <field name="care_coordinator_id" ref="base.user_admin"/>
+        <field name="risk_level">high</field>
+        <field name="clinical_risk_score">72</field>
+        <field name="chronic_disease_ids" eval="[(4, ref('disease_diabetes')), (4, ref('disease_hypertension'))]"/>
+        <field name="active_medication_summary">Metformin 500mg BD; Amlodipine 5mg OD; Atorvastatin 20mg OD</field>
+        <field name="clinical_alerts">HbA1c overdue; BP elevated on last visit</field>
+        <field name="consent_notes">Signed general consent and care-plan consent (2024).</field>
+    </record>
+
+    <record id="patient_james_okeke" model="healthcare.patient">
+        <field name="name">James Okeke</field>
+        <field name="date_of_birth">1965-11-02</field>
+        <field name="gender">male</field>
+        <field name="phone">+1 555 2001</field>
+        <field name="blood_group">a+</field>
+        <field name="allergies">None known</field>
+        <field name="smoking_status">former</field>
+        <field name="alcohol_status">none</field>
+        <field name="medical_scheme">CareMed</field>
+        <field name="membership_number">CM-441290</field>
+        <field name="practice_id" ref="practice_riverside"/>
+        <field name="primary_gp_id" ref="base.user_admin"/>
+        <field name="care_coordinator_id" ref="base.user_admin"/>
+        <field name="risk_level">medium</field>
+        <field name="clinical_risk_score">48</field>
+        <field name="chronic_disease_ids" eval="[(4, ref('disease_copd'))]"/>
+        <field name="active_medication_summary">Salbutamol inhaler PRN; Tiotropium OD</field>
+    </record>
+
+    <record id="patient_aisha_khan" model="healthcare.patient">
+        <field name="name">Aisha Khan</field>
+        <field name="date_of_birth">1990-03-21</field>
+        <field name="gender">female</field>
+        <field name="phone">+1 555 3001</field>
+        <field name="blood_group">b+</field>
+        <field name="smoking_status">never</field>
+        <field name="alcohol_status">none</field>
+        <field name="practice_id" ref="practice_northside"/>
+        <field name="primary_gp_id" ref="base.user_admin"/>
+        <field name="care_coordinator_id" ref="base.user_admin"/>
+        <field name="risk_level">low</field>
+        <field name="clinical_risk_score">18</field>
+        <field name="chronic_disease_ids" eval="[(4, ref('disease_asthma'))]"/>
+    </record>
+
+    <record id="patient_robert_lee" model="healthcare.patient">
+        <field name="name">Robert Lee</field>
+        <field name="date_of_birth">1955-08-09</field>
+        <field name="gender">male</field>
+        <field name="phone">+1 555 4001</field>
+        <field name="blood_group">ab+</field>
+        <field name="practice_id" ref="practice_riverside"/>
+        <field name="primary_gp_id" ref="base.user_admin"/>
+        <field name="care_coordinator_id" ref="base.user_admin"/>
+        <field name="risk_level">critical</field>
+        <field name="clinical_risk_score">88</field>
+        <field name="chronic_disease_ids" eval="[(4, ref('disease_diabetes')), (4, ref('disease_hypertension')), (4, ref('disease_copd'))]"/>
+        <field name="clinical_alerts">Multiple missed reviews; escalation to clinical manager</field>
+    </record>
+
+    <record id="patient_sofia_martinez" model="healthcare.patient">
+        <field name="name">Sofia Martinez</field>
+        <field name="date_of_birth">1983-12-01</field>
+        <field name="gender">female</field>
+        <field name="practice_id" ref="practice_northside"/>
+        <field name="primary_gp_id" ref="base.user_admin"/>
+        <field name="care_coordinator_id" ref="base.user_admin"/>
+        <field name="risk_level">medium</field>
+        <field name="clinical_risk_score">41</field>
+        <field name="chronic_disease_ids" eval="[(4, ref('disease_mental_health'))]"/>
+    </record>
+
+    <!-- Appointments -->
+    <record id="appt_maria_1" model="healthcare.appointment">
+        <field name="patient_id" ref="patient_maria_santos"/>
+        <field name="practice_id" ref="practice_northside"/>
+        <field name="practitioner_id" ref="base.user_admin"/>
+        <field name="start" eval="(datetime.today() - relativedelta(days=14)).strftime('%Y-%m-%d 09:00:00')"/>
+        <field name="stop" eval="(datetime.today() - relativedelta(days=14)).strftime('%Y-%m-%d 09:30:00')"/>
+        <field name="appointment_type">consultation</field>
+        <field name="state">completed</field>
+        <field name="reason">Diabetes review / elevated glucose</field>
+    </record>
+    <record id="appt_maria_2" model="healthcare.appointment">
+        <field name="patient_id" ref="patient_maria_santos"/>
+        <field name="practice_id" ref="practice_northside"/>
+        <field name="practitioner_id" ref="base.user_admin"/>
+        <field name="start" eval="(datetime.today() + relativedelta(days=2)).strftime('%Y-%m-%d 10:00:00')"/>
+        <field name="stop" eval="(datetime.today() + relativedelta(days=2)).strftime('%Y-%m-%d 10:30:00')"/>
+        <field name="appointment_type">follow_up</field>
+        <field name="state">scheduled</field>
+        <field name="reason">Care plan follow-up</field>
+    </record>
+    <record id="appt_james_1" model="healthcare.appointment">
+        <field name="patient_id" ref="patient_james_okeke"/>
+        <field name="practice_id" ref="practice_riverside"/>
+        <field name="practitioner_id" ref="base.user_admin"/>
+        <field name="start" eval="(datetime.today() - relativedelta(days=7)).strftime('%Y-%m-%d 11:00:00')"/>
+        <field name="stop" eval="(datetime.today() - relativedelta(days=7)).strftime('%Y-%m-%d 11:30:00')"/>
+        <field name="appointment_type">consultation</field>
+        <field name="state">completed</field>
+        <field name="reason">COPD exacerbation follow-up</field>
+    </record>
+    <record id="appt_robert_1" model="healthcare.appointment">
+        <field name="patient_id" ref="patient_robert_lee"/>
+        <field name="practice_id" ref="practice_riverside"/>
+        <field name="practitioner_id" ref="base.user_admin"/>
+        <field name="start" eval="(datetime.today() - relativedelta(days=3)).strftime('%Y-%m-%d 08:30:00')"/>
+        <field name="stop" eval="(datetime.today() - relativedelta(days=3)).strftime('%Y-%m-%d 09:00:00')"/>
+        <field name="appointment_type">urgent</field>
+        <field name="state">no_show</field>
+        <field name="reason">Multi-morbidity review</field>
+    </record>
+
+    <!-- Consultation for Maria -->
+    <record id="consult_maria_1" model="healthcare.consultation">
+        <field name="patient_id" ref="patient_maria_santos"/>
+        <field name="practice_id" ref="practice_northside"/>
+        <field name="practitioner_id" ref="base.user_admin"/>
+        <field name="appointment_id" ref="appt_maria_1"/>
+        <field name="consultation_date" eval="(datetime.today() - relativedelta(days=14)).strftime('%Y-%m-%d 09:05:00')"/>
+        <field name="state">done</field>
+        <field name="chief_complaint">Polyuria, fatigue, home glucose readings 180-220 mg/dL</field>
+        <field name="history">&lt;p&gt;Known T2DM for 8 years. Reports reduced exercise over 3 months. Adherent to Metformin.&lt;/p&gt;</field>
+        <field name="vital_bp">148/92</field>
+        <field name="vital_hr">78</field>
+        <field name="vital_temp">36.7</field>
+        <field name="vital_weight">84.5</field>
+        <field name="vital_bmi">31.2</field>
+        <field name="clinical_examination">&lt;p&gt;Alert, overweight. No peripheral oedema. Foot exam clear.&lt;/p&gt;</field>
+        <field name="disease_ids" eval="[(4, ref('disease_diabetes')), (4, ref('disease_hypertension'))]"/>
+        <field name="diagnosis">Type 2 Diabetes — suboptimal control; Hypertension — not at target</field>
+        <field name="treatment">&lt;p&gt;Intensify lifestyle counselling; refer dietician; schedule HbA1c; continue antihypertensives.&lt;/p&gt;</field>
+        <field name="medication">Metformin 500mg BD; Amlodipine 5mg OD; Atorvastatin 20mg OD</field>
+        <field name="investigations">HbA1c, Lipid profile, U&amp;E, Urine ACR</field>
+        <field name="clinical_notes">&lt;p&gt;Discussed care plan activation and coordinator follow-up calls.&lt;/p&gt;</field>
+        <field name="follow_up_date" eval="(datetime.today() + relativedelta(days=2)).strftime('%Y-%m-%d')"/>
+        <field name="follow_up_plan">GP follow-up in 2 weeks; monthly dietician; coordinator weekly calls x4</field>
+    </record>
+
+    <!-- Care plan -->
+    <record id="care_plan_maria_dm" model="healthcare.care.plan">
+        <field name="name">Maria Santos — Diabetes Care Plan</field>
+        <field name="patient_id" ref="patient_maria_santos"/>
+        <field name="practice_id" ref="practice_northside"/>
+        <field name="disease_id" ref="disease_diabetes"/>
+        <field name="coordinator_id" ref="base.user_admin"/>
+        <field name="start_date" eval="(datetime.today() - relativedelta(days=14)).strftime('%Y-%m-%d')"/>
+        <field name="state">active</field>
+        <field name="goal">HbA1c &lt; 7.0%; BP &lt; 130/80; weight reduction 5% in 6 months</field>
+    </record>
+    <record id="care_line_gp_review" model="healthcare.care.plan.line">
+        <field name="care_plan_id" ref="care_plan_maria_dm"/>
+        <field name="name">Quarterly GP Review</field>
+        <field name="activity_type">gp_review</field>
+        <field name="frequency">quarterly</field>
+        <field name="responsible_id" ref="base.user_admin"/>
+        <field name="next_due_date" eval="(datetime.today() + relativedelta(days=2)).strftime('%Y-%m-%d')"/>
+        <field name="state">scheduled</field>
+    </record>
+    <record id="care_line_dietician" model="healthcare.care.plan.line">
+        <field name="care_plan_id" ref="care_plan_maria_dm"/>
+        <field name="name">Monthly Dietician Session</field>
+        <field name="activity_type">dietician</field>
+        <field name="frequency">monthly</field>
+        <field name="responsible_id" ref="base.user_admin"/>
+        <field name="next_due_date" eval="(datetime.today() + relativedelta(days=5)).strftime('%Y-%m-%d')"/>
+        <field name="state">scheduled</field>
+    </record>
+    <record id="care_line_hba1c" model="healthcare.care.plan.line">
+        <field name="care_plan_id" ref="care_plan_maria_dm"/>
+        <field name="name">HbA1c Testing</field>
+        <field name="activity_type">lab</field>
+        <field name="frequency">biannual</field>
+        <field name="responsible_id" ref="base.user_admin"/>
+        <field name="next_due_date" eval="(datetime.today() - relativedelta(days=5)).strftime('%Y-%m-%d')"/>
+        <field name="state">overdue</field>
+    </record>
+    <record id="care_line_coord_call" model="healthcare.care.plan.line">
+        <field name="care_plan_id" ref="care_plan_maria_dm"/>
+        <field name="name">Care Coordinator Call</field>
+        <field name="activity_type">coordinator_call</field>
+        <field name="frequency">weekly</field>
+        <field name="responsible_id" ref="base.user_admin"/>
+        <field name="next_due_date" eval="datetime.today().strftime('%Y-%m-%d')"/>
+        <field name="state">scheduled</field>
+    </record>
+    <record id="care_line_weight" model="healthcare.care.plan.line">
+        <field name="care_plan_id" ref="care_plan_maria_dm"/>
+        <field name="name">Weight Monitoring</field>
+        <field name="activity_type">monitoring</field>
+        <field name="frequency">monthly</field>
+        <field name="responsible_id" ref="base.user_admin"/>
+        <field name="next_due_date" eval="(datetime.today() - relativedelta(days=10)).strftime('%Y-%m-%d')"/>
+        <field name="state">overdue</field>
+    </record>
+
+    <!-- Referral -->
+    <record id="referral_maria_dietician" model="healthcare.referral">
+        <field name="patient_id" ref="patient_maria_santos"/>
+        <field name="practice_id" ref="practice_northside"/>
+        <field name="consultation_id" ref="consult_maria_1"/>
+        <field name="from_practitioner_id" ref="base.user_admin"/>
+        <field name="specialty">dietician</field>
+        <field name="receiving_specialist">Anita Desai, RD</field>
+        <field name="reason">Medical nutrition therapy for Type 2 Diabetes; weight management support.</field>
+        <field name="priority">high</field>
+        <field name="state">accepted</field>
+        <field name="appointment_date" eval="(datetime.today() + relativedelta(days=5)).strftime('%Y-%m-%d 15:00:00')"/>
+    </record>
+
+    <!-- Disease registry -->
+    <record id="registry_maria_dm" model="healthcare.disease.registry">
+        <field name="patient_id" ref="patient_maria_santos"/>
+        <field name="disease_id" ref="disease_diabetes"/>
+        <field name="enrolment_date">2024-01-10</field>
+        <field name="risk_level">high</field>
+        <field name="last_review_date" eval="(datetime.today() - relativedelta(days=14)).strftime('%Y-%m-%d')"/>
+        <field name="next_review_date" eval="(datetime.today() + relativedelta(months=3)).strftime('%Y-%m-%d')"/>
+        <field name="compliance_state">at_risk</field>
+        <field name="care_plan_id" ref="care_plan_maria_dm"/>
+    </record>
+    <record id="registry_maria_htn" model="healthcare.disease.registry">
+        <field name="patient_id" ref="patient_maria_santos"/>
+        <field name="disease_id" ref="disease_hypertension"/>
+        <field name="enrolment_date">2024-01-10</field>
+        <field name="risk_level">medium</field>
+        <field name="next_review_date" eval="(datetime.today() + relativedelta(months=1)).strftime('%Y-%m-%d')"/>
+        <field name="compliance_state">on_track</field>
+    </record>
+    <record id="registry_james_copd" model="healthcare.disease.registry">
+        <field name="patient_id" ref="patient_james_okeke"/>
+        <field name="disease_id" ref="disease_copd"/>
+        <field name="enrolment_date">2023-06-01</field>
+        <field name="risk_level">medium</field>
+        <field name="next_review_date" eval="(datetime.today() - relativedelta(days=2)).strftime('%Y-%m-%d')"/>
+        <field name="compliance_state">overdue</field>
+    </record>
+    <record id="registry_robert_dm" model="healthcare.disease.registry">
+        <field name="patient_id" ref="patient_robert_lee"/>
+        <field name="disease_id" ref="disease_diabetes"/>
+        <field name="enrolment_date">2022-03-15</field>
+        <field name="risk_level">critical</field>
+        <field name="next_review_date" eval="(datetime.today() - relativedelta(days=20)).strftime('%Y-%m-%d')"/>
+        <field name="compliance_state">overdue</field>
+    </record>
+    <record id="registry_aisha_asthma" model="healthcare.disease.registry">
+        <field name="patient_id" ref="patient_aisha_khan"/>
+        <field name="disease_id" ref="disease_asthma"/>
+        <field name="enrolment_date">2025-02-01</field>
+        <field name="risk_level">low</field>
+        <field name="next_review_date" eval="(datetime.today() + relativedelta(months=6)).strftime('%Y-%m-%d')"/>
+        <field name="compliance_state">on_track</field>
+    </record>
+
+    <!-- v2: Lab request for Maria -->
+    <record id="lab_request_maria_1" model="healthcare.lab.request">
+        <field name="patient_id" ref="patient_maria_santos"/>
+        <field name="practice_id" ref="practice_northside"/>
+        <field name="consultation_id" ref="consult_maria_1"/>
+        <field name="requested_by_id" ref="base.user_admin"/>
+        <field name="request_date" eval="(datetime.today() - relativedelta(days=12)).strftime('%Y-%m-%d 10:00:00')"/>
+        <field name="priority">urgent</field>
+        <field name="state">completed</field>
+        <field name="clinical_notes">Diabetes / hypertension workup after GP consult.</field>
+    </record>
+    <record id="lab_line_maria_hba1c" model="healthcare.lab.request.line">
+        <field name="request_id" ref="lab_request_maria_1"/>
+        <field name="test_type_id" ref="lab_test_hba1c"/>
+        <field name="result_value">8.4</field>
+        <field name="result_unit">%</field>
+        <field name="reference_range">4.0 - 5.6</field>
+        <field name="is_abnormal" eval="True"/>
+        <field name="result_date" eval="(datetime.today() - relativedelta(days=10)).strftime('%Y-%m-%d 14:00:00')"/>
+        <field name="review_state">pending</field>
+    </record>
+    <record id="lab_line_maria_ldl" model="healthcare.lab.request.line">
+        <field name="request_id" ref="lab_request_maria_1"/>
+        <field name="test_type_id" ref="lab_test_lipid"/>
+        <field name="result_value">142</field>
+        <field name="result_unit">mg/dL</field>
+        <field name="reference_range">&lt; 100</field>
+        <field name="is_abnormal" eval="True"/>
+        <field name="result_date" eval="(datetime.today() - relativedelta(days=10)).strftime('%Y-%m-%d 14:00:00')"/>
+        <field name="review_state">pending</field>
+    </record>
+    <record id="lab_line_maria_creat" model="healthcare.lab.request.line">
+        <field name="request_id" ref="lab_request_maria_1"/>
+        <field name="test_type_id" ref="lab_test_creatinine"/>
+        <field name="result_value">0.9</field>
+        <field name="result_unit">mg/dL</field>
+        <field name="reference_range">0.6 - 1.2</field>
+        <field name="is_abnormal" eval="False"/>
+        <field name="result_date" eval="(datetime.today() - relativedelta(days=10)).strftime('%Y-%m-%d 14:00:00')"/>
+        <field name="review_state">reviewed</field>
+        <field name="reviewed_by_id" ref="base.user_admin"/>
+    </record>
+
+    <!-- v2: Prescription for Maria -->
+    <record id="rx_maria_1" model="healthcare.prescription">
+        <field name="patient_id" ref="patient_maria_santos"/>
+        <field name="practice_id" ref="practice_northside"/>
+        <field name="consultation_id" ref="consult_maria_1"/>
+        <field name="prescribed_by_id" ref="base.user_admin"/>
+        <field name="prescription_date" eval="(datetime.today() - relativedelta(days=14)).strftime('%Y-%m-%d 09:30:00')"/>
+        <field name="state">active</field>
+        <field name="is_repeat" eval="True"/>
+        <field name="notes">Continue chronic therapy; review after HbA1c.</field>
+    </record>
+    <record id="rx_line_maria_metformin" model="healthcare.prescription.line">
+        <field name="prescription_id" ref="rx_maria_1"/>
+        <field name="medicine_id" ref="medicine_metformin"/>
+        <field name="strength">500mg</field>
+        <field name="dosage">1 tablet</field>
+        <field name="frequency">BD</field>
+        <field name="duration">Ongoing</field>
+    </record>
+    <record id="rx_line_maria_amlodipine" model="healthcare.prescription.line">
+        <field name="prescription_id" ref="rx_maria_1"/>
+        <field name="medicine_id" ref="medicine_amlodipine"/>
+        <field name="strength">5mg</field>
+        <field name="dosage">1 tablet</field>
+        <field name="frequency">OD</field>
+        <field name="duration">Ongoing</field>
+    </record>
+    <record id="rx_line_maria_atorva" model="healthcare.prescription.line">
+        <field name="prescription_id" ref="rx_maria_1"/>
+        <field name="medicine_id" ref="medicine_atorvastatin"/>
+        <field name="strength">20mg</field>
+        <field name="dosage">1 tablet</field>
+        <field name="frequency">OD nocte</field>
+        <field name="duration">Ongoing</field>
+    </record>
+
+    <!-- v2: Allied dietician session -->
+    <record id="allied_maria_dietician" model="healthcare.allied.session">
+        <field name="patient_id" ref="patient_maria_santos"/>
+        <field name="practice_id" ref="practice_northside"/>
+        <field name="referral_id" ref="referral_maria_dietician"/>
+        <field name="care_plan_id" ref="care_plan_maria_dm"/>
+        <field name="specialty">dietician</field>
+        <field name="practitioner_id" ref="base.user_admin"/>
+        <field name="session_date" eval="(datetime.today() - relativedelta(days=3)).strftime('%Y-%m-%d 15:00:00')"/>
+        <field name="state">completed</field>
+        <field name="assessment">&lt;p&gt;BMI 31.2. High refined carb intake. Limited vegetable portions.&lt;/p&gt;</field>
+        <field name="goals">Reduce weight 5% in 6 months; plate method education; HbA1c support.</field>
+        <field name="recommendations">&lt;p&gt;Carbohydrate awareness; increase fibre; weekly food diary.&lt;/p&gt;</field>
+        <field name="progress_notes">&lt;p&gt;Patient engaged. Follow-up in 4 weeks.&lt;/p&gt;</field>
+        <field name="next_review_date" eval="(datetime.today() + relativedelta(days=25)).strftime('%Y-%m-%d')"/>
+        <field name="outcome">improved</field>
+    </record>
+</odoo>
